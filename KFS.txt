@@ -1,0 +1,26 @@
+multiboot manual
+https://www.gnu.org/software/grub/manual/multiboot2/multiboot.html
+pdf format
+https://www.gnu.org/software/grub/manual/multiboot2/multiboot.pdf
+
+TUTO
+https://os.phil-opp.com/multiboot-kernel/
+
+not multiboot compliant
+https://github.com/cfenollosa/os-tutorial
+
+linkerscript ld
+https://sourceware.org/binutils/docs/ld/Scripts.html
+
+Global Description Table
+http://pages.cs.wisc.edu/%7Eremzi/OSTEP/vm-segmentation.pdf
+https://css.csail.mit.edu/6.858/2014/readings/i386/s05_01.htm
+
+IA 32 e
+https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-system-programming-manual-325384.pdf
+
+amd64
+Volume 2 System Programming
+https://www.amd.com/system/files/TechDocs/24593.pdf
+Volume 3 General-Purpose and System Instructions
+https://www.amd.com/system/files/TechDocs/24594.pdf

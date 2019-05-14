@@ -24,11 +24,23 @@ __multi_header_end:
 
 section .bss
 	; 4096 * 4 (dual word)
-	dd 4096
-global _start
+_stack_top:
+	resd 4096
+_stack_bottom:
+
 section .text
+global _start
+extern _gp
+extern gdt_flush
 bits 32
 	; the "main"
 _start:
 	mov dword [SCREEN], 0x2f4b2f4f
+	mov esp, _stack_bottom
+	mov eax, _gp
+	push eax
+	call gdt_flush
+	mov dword [SCREEN+60], 0x2f4b2f4f
+.L1:
 	hlt
+	jmp .L1

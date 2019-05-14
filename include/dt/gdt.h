@@ -20,11 +20,15 @@
 
 # include "xstdint.h"
 
+# define GDT_NENTRY 5
+
 # define GDT_ACCESS_RW 0x02
 # define GDT_ACCESS_DC 0x04
 # define GDT_ACCESS_EX 0x08
 
 # define GDT_ACCESS_DT 0x10
+# define GDT_PVL_KERNEL 0
+# define GDT_PVL_USER 3
 # define GDT_ACCESS_RING(x) (((x) & 3) << 5)
 # define GDT_ACCESS_P 0x80
 
@@ -66,13 +70,13 @@ struct gdt_access_s
 		u8	dpl:2;
 		/* Present bit. This must be 1 for all valid selectors. */
 		u8	p:1;
-};
+}  __attribute__((packed));
 
-union gdt_access_u
+typedef union gdt_access_u
 {
-		u8				access;
-		gdt_access_s	__access
-};
+		u8					access;
+		struct gdt_access_s	__access;
+}  gdt_access_t;
 
 # define GDT_GRAN_64BIT 0x20
 # define GDT_GRAN_32BIT 0x40
@@ -90,33 +94,51 @@ struct gdt_granular_s
 		u8	d:1;
 		/* Granularity (0 = 1 byte, 1 = 4kbyte) */
 		u8	g:1;
-};
+} __attribute__((packed));
 
-typedef gdt_access_u gdt_access;
+typedef union gdt_granular_u
+{
+		u8						gran;
+		struct gdt_granular_s	__gran;
+		
+}  gdt_granular_t;
 
-struct gdt_entry_s
+struct gdt_entry
 {
 		u16				limit_low;
 		/* start */
 		u16				base_low;
 		u8				base_middle;
-		gdt_access		access;
-# define access access.access
-# define access_ac access.__access.ac
-# define access_rw access.__access.rw
-# define access_dc access.__access.dc
-# define access_ex access.__access.ex
-# define access_dt access.__access.dt
-# define access_dpl access.__access.dpl
-# define access_p access.__access.p
-		gdt_granular	__granular;
-# define gran __granular
-# define limit_high gran.limit_high
-# define gran_avl gran.a
-# define gran_long gran.l
-# define gran_dword gran.d
-# define gran_exp gran.g
+		gdt_access_t	access;
+# define gdt_access		access.access
+# define gdt_ac			access.__access.ac
+# define gdt_rw			access.__access.rw
+# define gdt_dc			access.__access.dc
+# define gdt_ex			access.__access.ex
+# define gdt_dt			access.__access.dt
+# define gdt_dpl		access.__access.dpl
+# define gdts_p			access.__access.p
+		gdt_granular_t	gran;
+# define gdt_gran		gran.gran
+# define limit_high 	gran.__gran.limit_high
+# define gdt_avl		gran.__gran.a
+# define gdt_qword		gran.__gran.l
+# define gdt_dword		gran.__gran.d
+# define gdt_exp		gran.__gran.g
 		u8				base_high;
-};
+} __attribute__((packed));
+
+typedef struct gdt_entry* gdt_entryp;
+
+struct gdt
+{
+		u16 limit;
+		gdt_entryp entp;
+} __attribute__((packed));
+
+extern struct gdt_entry	gdt_entries[];
+extern struct gdt		_gp;
+
+extern void gdt_flush(struct gdt *);
 
 #endif /* __GDT_H__ */

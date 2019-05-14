@@ -5,6 +5,9 @@ endif
 AS = nasm
 ASFLAGS = -felf
 
+CC = gcc
+CFLAGS = -nodefaultlibs -fno-builtin -fno-exception -fno-stack-protector -fno-rtti -nostdlib -Wall -Wextra -m32
+
 LDFLAGS = -ffreestanding -O2 -nostdlib -lgcc
 
 CFLAGS = -fno-builtin -fno-exceptions -fno-stack-protector \
@@ -16,13 +19,16 @@ kernel := build/kernel-$(arch).bin
 
 iso := build/os-$(arch).iso
 
-linker_script := src/arch/$(arch)/linker.ld
-grub_cfg := src/arch/$(arch)/grub.cfg
+linker_script := arch/$(arch)/linker.ld
+grub_cfg := arch/$(arch)/grub.cfg
 
-assembly_source_files := $(wildcard src/arch/$(arch)/asm/*.s)
+assembly_source_files := $(wildcard arch/$(arch)/asm/*.s)
+c_source_files := $(wildcard arch/$(arch)/*.c)
 
-assembly_object_files := $(patsubst src/arch/$(arch)/asm/%.s, \
-	build/arch/$(arch)/%.o, $(assembly_source_files))
+assembly_object_files := $(patsubst arch/$(arch)/asm/%.s, \
+	build/arch/$(arch)/asm/%.o, $(assembly_source_files))
+c_object_files := $(patsubst arch/$(arch)/%.c, \
+	build/arch/$(arch)/%.o, $(c_source_files))
 
 
 .PHONY: all clean re run iso
@@ -47,10 +53,15 @@ $(iso): $(kernel) $(grub_cfg)
 	$(prefix)grub-mkrescue -o $(iso) build/isofiles
 	rm -r build/isofiles
 
-$(kernel): $(assembly_object_files) $(linker_script)
-	$(prefix)gcc -T $(linker_script) $(LDFLAGS) -o $(kernel) $(assembly_object_files)
+$(kernel): $(assembly_object_files) $(c_object_files) $(linker_script)
+	$(prefix)gcc -T $(linker_script) $(LDFLAGS) -o $(kernel) $(assembly_object_files) \
+					$(c_object_files)
 
 # compile assembly files
-build/arch/$(arch)/%.o: src/arch/$(arch)/%.s
+build/arch/$(arch)/asm/%.o: arch/$(arch)/asm/%.s
 	mkdir -p $(shell dirname $@)
 	$(AS) $(ASFLAGS) $< -o $@
+
+build/arch/$(arch)/%.o: arch/$(arch)/%.c
+	mkdir -p $(shell dirname $@)
+	$(prefix)$(CC) $(CFLAGS) -c $< -o $@ -Iinclude

@@ -7,14 +7,17 @@ SECTIONS {
 	    {
 		        /* ensure that the multiboot header is at the beginning */
 		        *(.multiboot_header)
+				. = ALIGN(4K);
 	    }
-
     .text :
 	    {
 		        *(.text)
+				. = ALIGN(4K);
 		}
+
 	.bss :
 		{
 				*(.bss)
+				. = ALIGN(4K);
 		}
 }	

@@ -63,7 +63,7 @@ struct gdt_entry	gdt_entries[GDT_NENTRY] = {
 		},
 };
 
-struct gdt			_gp = {
-		.limit = GDT_NENTRY * sizeof(struct gdt_entry),
-		.entp = gdt_entries
+struct gdt			_gdtp = {
+		.limit = sizeof(gdt_entries),
+		.entp = (u32)gdt_entries
 };

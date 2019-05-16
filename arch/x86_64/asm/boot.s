@@ -30,14 +30,14 @@ _stack_bottom:
 
 section .text
 global _start
-extern _gp
+extern _gdtp
 extern gdt_flush
 bits 32
 	; the "main"
 _start:
 	mov dword [SCREEN], 0x2f4b2f4f
 	mov esp, _stack_bottom
-	mov eax, _gp
+	mov eax, _gdtp
 	push eax
 	call gdt_flush
 	mov dword [SCREEN+60], 0x2f4b2f4f

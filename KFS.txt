@@ -12,9 +12,14 @@ https://github.com/cfenollosa/os-tutorial
 linkerscript ld
 https://sourceware.org/binutils/docs/ld/Scripts.html
 
-Global Description Table
+Global Descriptor Table
 http://pages.cs.wisc.edu/%7Eremzi/OSTEP/vm-segmentation.pdf
 https://css.csail.mit.edu/6.858/2014/readings/i386/s05_01.htm
+
+Interrupt Descriptor Table
+https://en.wikibooks.org/wiki/X86_Assembly/Advanced_Interrupts
+github
+https://github.com/torvalds/linux/blob/master/arch/x86/kernel/idt.c
 
 IA 32 e
 https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-system-programming-manual-325384.pdf
@@ -24,3 +29,6 @@ Volume 2 System Programming
 https://www.amd.com/system/files/TechDocs/24593.pdf
 Volume 3 General-Purpose and System Instructions
 https://www.amd.com/system/files/TechDocs/24594.pdf
+
+some other UNIX kernel tutorial
+http://www.jamesmolloy.co.uk/tutorial_html/

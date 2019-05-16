@@ -32,7 +32,7 @@
 # define GDT_ACCESS_RING(x) (((x) & 3) << 5)
 # define GDT_ACCESS_P 0x80
 
-struct gdt_access_s
+struct gdt_access_bits
 {
 		/* Accessed bit. The CPU sets this to 1 when the segment is 
 		   accessed. */
@@ -74,15 +74,15 @@ struct gdt_access_s
 
 typedef union gdt_access_u
 {
-		u8					access;
-		struct gdt_access_s	__access;
+		u8						access;
+		struct gdt_access_bits	bits;
 }  gdt_access_t;
 
 # define GDT_GRAN_64BIT 0x20
 # define GDT_GRAN_32BIT 0x40
 # define GDT_GRAN_EXPND 0x80
 
-struct gdt_granular_s
+struct gdt_granular_bits
 {
 		/* Tells the maximum addressable unit */
 		u8	limit_high:4;
@@ -98,8 +98,8 @@ struct gdt_granular_s
 
 typedef union gdt_granular_u
 {
-		u8						gran;
-		struct gdt_granular_s	__gran;
+		u8							gran;
+		struct gdt_granular_bits	bits;
 		
 }  gdt_granular_t;
 
@@ -111,20 +111,20 @@ struct gdt_entry
 		u8				base_middle;
 		gdt_access_t	access;
 # define gdt_access		access.access
-# define gdt_ac			access.__access.ac
-# define gdt_rw			access.__access.rw
-# define gdt_dc			access.__access.dc
-# define gdt_ex			access.__access.ex
-# define gdt_dt			access.__access.dt
-# define gdt_dpl		access.__access.dpl
-# define gdts_p			access.__access.p
+# define gdt_ac			access.bits.ac
+# define gdt_rw			access.bits.rw
+# define gdt_dc			access.bits.dc
+# define gdt_ex			access.bits.ex
+# define gdt_dt			access.bits.dt
+# define gdt_dpl		access.bits.dpl
+# define gdts_p			access.bits.p
 		gdt_granular_t	gran;
 # define gdt_gran		gran.gran
-# define limit_high 	gran.__gran.limit_high
-# define gdt_avl		gran.__gran.a
-# define gdt_qword		gran.__gran.l
-# define gdt_dword		gran.__gran.d
-# define gdt_exp		gran.__gran.g
+# define limit_high 	gran.bits.limit_high
+# define gdt_avl		gran.bits.a
+# define gdt_qword		gran.bits.l
+# define gdt_dword		gran.bits.d
+# define gdt_exp		gran.bits.g
 		u8				base_high;
 } __attribute__((packed));
 
@@ -133,11 +133,11 @@ typedef struct gdt_entry* gdt_entryp;
 struct gdt
 {
 		u16 limit;
-		gdt_entryp entp;
+		u32 entp;
 } __attribute__((packed));
 
 extern struct gdt_entry	gdt_entries[];
-extern struct gdt		_gp;
+extern struct gdt		_gdtp;
 
 extern void gdt_flush(struct gdt *);
 

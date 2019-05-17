@@ -15,23 +15,32 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __XSTDINT_H__
-# define __XSTDINT_H__
+#ifndef __MINIMAL_VGA_TTY_H__
+# define __MINIMAL_VGA_TTY_H__
+# include "xstdint.h"
 
-typedef __UINT_FAST32_TYPE__ u32;
-typedef __UINT_FAST16_TYPE__ u16;
-typedef __UINT_FAST8_TYPE__ u8;
+# define vga_write(mem, color, size) __vga_write(mem, color, size)
 
-typedef __INT_FAST32_TYPE__ i32;
-typedef __INT_FAST16_TYPE__ i16;
-typedef __INT_FAST8_TYPE__ i8;
+enum __vga_color
+{
+	VGA_COLOR_BLACK = 0,
+	VGA_COLOR_BLUE = 1,
+	VGA_COLOR_GREEN = 2,
+	VGA_COLOR_CYAN = 3,
+	VGA_COLOR_RED = 4,
+	VGA_COLOR_MAGENTA = 5,
+	VGA_COLOR_BROWN = 6,
+	VGA_COLOR_LIGHT_GREY = 7,
+	VGA_COLOR_DARK_GREY = 8,
+	VGA_COLOR_LIGHT_BLUE = 9,
+	VGA_COLOR_LIGHT_GREEN = 10,
+	VGA_COLOR_LIGHT_CYAN = 11,
+	VGA_COLOR_LIGHT_RED = 12,
+	VGA_COLOR_LIGHT_MAGENTA = 13,
+	VGA_COLOR_LIGHT_BROWN = 14,
+	VGA_COLOR_WHITE = 15,
+};
 
-# if __x86_64__
-typedef __UINT_FAST64_TYPE__ u64;
-typedef __INT_FAST64_TYPE__ i64;
-typedef u64 size_t;
-# else
-typedef u32 size_t;
-# endif
+extern void __vga_write(void *, u8, u32);
 
-#endif
+#endif /* __MINIMAL_VGA_TTY_H__ */

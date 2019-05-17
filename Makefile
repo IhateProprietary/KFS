@@ -6,7 +6,7 @@ AS = nasm
 ASFLAGS = -felf
 
 CC = gcc
-CFLAGS = -nodefaultlibs -fno-builtin -fno-exception -fno-stack-protector -fno-rtti -nostdlib -Wall -Wextra -m32
+CFLAGS = -nodefaultlibs -fno-builtin -fno-exceptions -fno-stack-protector -fno-rtti -nostdlib -Wall -Wextra -m32 -O2
 
 LDFLAGS = -ffreestanding -O2 -nostdlib -lgcc
 

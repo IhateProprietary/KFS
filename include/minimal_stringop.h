@@ -15,23 +15,20 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __XSTDINT_H__
-# define __XSTDINT_H__
+#ifndef __MINIMAL_STRINGOP_H__
+# define __MINIMAL_STRINGOP_H__
 
-typedef __UINT_FAST32_TYPE__ u32;
-typedef __UINT_FAST16_TYPE__ u16;
-typedef __UINT_FAST8_TYPE__ u8;
+# include "xstdint.h"
 
-typedef __INT_FAST32_TYPE__ i32;
-typedef __INT_FAST16_TYPE__ i16;
-typedef __INT_FAST8_TYPE__ i8;
+extern void *_memmove(void *, const void *, size_t);
+extern void *_memcpy(void *, const void *, size_t);
+extern void *_memchr(const void *, int, size_t);
+extern int _memcmp(const void *, const void *, size_t);
+extern void *_memset(void *, int, size_t);
 
-# if __x86_64__
-typedef __UINT_FAST64_TYPE__ u64;
-typedef __INT_FAST64_TYPE__ i64;
-typedef u64 size_t;
-# else
-typedef u32 size_t;
-# endif
+extern size_t _strlen(const char *);
+extern int _strcmp(const char *, const char *);
+extern char *_strcpy(char *, const char *);
+extern char *_strchr(const char *, int);
 
-#endif
+#endif /* __MINIMAL_STRINGOP_H__ */

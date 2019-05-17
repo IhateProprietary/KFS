@@ -15,23 +15,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __XSTDINT_H__
-# define __XSTDINT_H__
+#include "private_stringop.h"
 
-typedef __UINT_FAST32_TYPE__ u32;
-typedef __UINT_FAST16_TYPE__ u16;
-typedef __UINT_FAST8_TYPE__ u8;
-
-typedef __INT_FAST32_TYPE__ i32;
-typedef __INT_FAST16_TYPE__ i16;
-typedef __INT_FAST8_TYPE__ i8;
-
-# if __x86_64__
-typedef __UINT_FAST64_TYPE__ u64;
-typedef __INT_FAST64_TYPE__ i64;
-typedef u64 size_t;
-# else
-typedef u32 size_t;
-# endif
-
-#endif
+int		_strcmp(const char *s1, const char *s2)
+{
+		return (_memcmp(s1, s2, _strlen(s1)));
+}

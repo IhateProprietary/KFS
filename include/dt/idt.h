@@ -69,14 +69,14 @@
 
 # define GATE(base, seg, ring, gate)									\
 		{																\
-				.base_low = ((base) & 0xffff);							\
-				.base_high = ((base) >> 16) & 0xffff);					\
-				.seg = (seg);											\
-				.bits.zero = 0;											\
-				.bits.ist = 0											\
-				.bits.type = (gate);									\
-				.bits.dpl = (ring);										\
-				.bits.p = 1;											\
+				.base_low = ((base) & 0xffff),							\
+				.base_high = ((base) >> 16) & 0xffff,					\
+				.selector = (seg),										\
+				.bits.zero = 0,											\
+				.bits.ist = 0,											\
+				.bits.type = (gate),									\
+				.bits.dpl = (ring),										\
+				.bits.p = 1,											\
 		}
 # define INTGATE(base, seg, ring)				\
 		GATE(base, seg, ring, IDT_GATE_INT)
@@ -110,7 +110,7 @@ struct idt
 {
 		u16 limit;
 		u32 entp;
-} __attributed__((packed));
+} __attribute__((packed));
 
 extern struct idt_entry idt_entries[];
 extern struct idt _idtp;

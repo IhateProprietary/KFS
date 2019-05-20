@@ -27,7 +27,7 @@ char	*_strchr(const char *str, int c)
 		cp = (u8 *)str;
 		while ((sizeof(OP) - 1) & (OP)cp)
 		{
-				if (*cp == c)
+				if (*cp == (u8)c)
 						return ((char *)cp);
 				else if (*cp == 0)
 						return (0);
@@ -46,42 +46,42 @@ char	*_strchr(const char *str, int c)
 				if (((val - LBITS) & HBITS) ||
 					(((val ^ mask) - LBITS) & HBITS)) {
 						cp = (u8 *)long_ptr;
-						if (*cp == c)
+						if (*cp == (u8)c)
 								return ((char *)cp);
 						else if (*cp++ == 0)
 								return (0);
 
-						else if (*cp == c)
+						else if (*cp == (u8)c)
 								return ((char *)cp);
 						else if (*cp++ == 0)
 								return (0);
 
-						else if (*cp == c)
+						else if (*cp == (u8)c)
 								return ((char *)cp);
 						else if (*cp++ == 0)
 								return (0);
 
-						else if (*cp == c)
+						else if (*cp == (u8)c)
 								return ((char *)cp);
 						else if (*cp++ == 0)
 								return (0);
 #if __x86_64__
-						else if (*cp == c)
+						else if (*cp == (u8)c)
 								return ((char *)cp);
 						else if (*cp++ == 0)
 								return (0);
 
-						else if (*cp == c)
+						else if (*cp == (u8)c)
 								return ((char *)cp);
 						else if (*cp++ == 0)
 								return (0);
 
-						else if (*cp == c)
+						else if (*cp == (u8)c)
 								return ((char *)cp);
 						else if (*cp++ == 0)
 								return (0);
-						
-						else if (*cp == c)
+
+						else if (*cp == (u8)c)
 								return ((char *)cp);
 						else if (*cp++ == 0)
 								return (0);

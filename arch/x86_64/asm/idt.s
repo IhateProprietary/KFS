@@ -7,13 +7,13 @@ section .text
 _isr%1:
 	push BYTE 0
 	push BYTE %1
-	jmp .isr_common_stub
+	jmp isr_common_stub
 %endmacro
 
 %macro err 1
 _isr%1:
 	push BYTE %1
-	jmp .isr_common_stub
+	jmp isr_common_stub
 %endmacro
 
 	noerr 0
@@ -39,9 +39,9 @@ _isr%1:
 
 extern __isr_fault_handler
 
-.isr_common_stub:
+isr_common_stub:
 	pusha
-	movzx eax, ds
+	mov ax, ds
 	push eax
 	mov ax, 0x10
 	mov ds, ax

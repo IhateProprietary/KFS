@@ -30,14 +30,15 @@ assembly_object_files := $(patsubst arch/$(arch)/asm/%.s, \
 c_object_files := $(patsubst arch/$(arch)/%.c, \
 	build/arch/$(arch)/%.o, $(c_source_files))
 
+stringop := build/libsops.a
 
 .PHONY: all clean re run iso
-
 
 all: $(kernel)
 
 clean:
-	rm -r build
+	make -C stringop clean
+	rm -rf build
 
 run: $(iso)
 	qemu-system-x86_64 -cdrom $(iso)
@@ -53,9 +54,12 @@ $(iso): $(kernel) $(grub_cfg)
 	$(prefix)grub-mkrescue -o $(iso) build/isofiles
 	rm -r build/isofiles
 
-$(kernel): $(assembly_object_files) $(c_object_files) $(linker_script)
+$(kernel): $(assembly_object_files) $(c_object_files) $(linker_script) $(stringop)
 	$(prefix)gcc -T $(linker_script) $(LDFLAGS) -o $(kernel) $(assembly_object_files) \
-					$(c_object_files)
+					$(c_object_files) -Lbuild -lsops
+
+$(stringop):
+	make -C stringop CFLAGS+="$(CFLAGS)" AR=$(prefix)$(AR) CC+=$(prefix)$(CC) TARGET=../$(stringop)
 
 # compile assembly files
 build/arch/$(arch)/asm/%.o: arch/$(arch)/asm/%.s

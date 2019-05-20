@@ -26,7 +26,7 @@
 #define __vga_putchar(c)									\
 		*(vga_buffer + (VGA_WIDTH * cursey) + cursex++) = (c)
 
-static u16 *vga_buffer = 0xb8000;
+static u16 *vga_buffer = (u16 *)0xb8000;
 static u16 cursex = 0;
 static u16 cursey = 0;
 
@@ -45,7 +45,7 @@ void __vga_write(void *mem, u8 color, u32 size)
 		u8 *zone = mem;
 
 		simple_spin_lock(&_vgalock);
-		for (idx; idx < size; ++idx)
+		for (idx = 0; idx < size; ++idx)
 		{
 				_vgac = (_vgac & ~0xff) | idx[zone];
 				__vga_putchar(_vgac);

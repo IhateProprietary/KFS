@@ -3,11 +3,9 @@ SRC		=	_memchr.c _memcmp.c _memcpy.c _memmove.c _memset.c			\
 
 OBJ		=	$(addsuffix .o, $(basename $(SRC)))
 
-NAME	=	libsops.a
+all: $(TARGET)
 
-all: $(NAME)
-
-$(NAME): $(OBJ)
+$(TARGET): $(OBJ)
 	$(AR) -rcs $@ $(OBJ)
 
 %.o : %.c

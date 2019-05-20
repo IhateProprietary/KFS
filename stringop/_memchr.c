@@ -17,7 +17,7 @@
 
 #include "private_stringop.h"
 
-static inline void *_memchr8(OP dstp, int c, size_t n)
+static inline void *_memchr8(OP dstp, u8 c, size_t n)
 {
 		register u8	dstc;
 

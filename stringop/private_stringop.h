@@ -18,9 +18,6 @@
 #ifndef __PRIVATE_STRINGOP_H__
 # define __PRIVATE_STRINGOP_H__
 
-# define LBITS 0x1010101L
-# define HBITS 0x80808080L
-
 # if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #  define MERGE(x1, sh1, x2, sh2) (((x1) << (sh1)) | ((x2) >> (sh2)))
 # else
@@ -28,14 +25,30 @@
 # endif
 
 # if __x86_64__
+
+#  define LBITS 0x101010101010101L
+#  define HBITS 0x8080808080808080L
+
 #  define size_t __UINT_FAST64_TYPE__
 #  define OP __UINT_FAST64_TYPE__
-#  define OP_WIDTH __INT_FAST64_WIDTH__
+#   if defined(__clang__)
+#    define OP_WIDTH (sizeof(__UINT_FAST64_TYPE__) * 8)
+#   elif defined(__GNUC__)
+#    define OP_WIDTH __INT_FAST64_WIDTH__
+#  endif
 #  define OP_SHIFT 3
 # else
+
+#  define LBITS 0x1010101L
+#  define HBITS 0x80808080L
+
 #  define size_t __UINT_FAST32_TYPE__
 #  define OP __UINT_FAST32_TYPE__
-#  define OP_WIDTH __INT_FAST32_WIDTH__
+#   if defined(__clang__)
+#    define OP_WIDTH (sizeof(__UINT_FAST32_TYPE__) * 8)
+#   elif defined(__GNUC__)
+#    define OP_WIDTH __INT_FAST32_WIDTH__
+#  endif
 #  define OP_SHIFT 2
 # endif  /* arch check  */
 

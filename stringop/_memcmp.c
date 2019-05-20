@@ -44,11 +44,11 @@ static int	_unaligned_word_cmp(OP s1p, OP s2p, size_t m8)
 		w[0] = ((OP *)s2p)[0];
 		while (xlen--) {
 				w[1] = ((OP *)s2p)[1];
-				if (!((val = MERGE(w[0], sh[0], w[1], sh[1])) ^ ((OP *)s1p)[0]))
+				if (((val = MERGE(w[0], sh[0], w[1], sh[1])) ^ ((OP *)s1p)[0]))
 						return (_memcmp8(s1p, (OP)&val, OP_SIZE));
 				s2p += (OP_SIZE << 1);
 				w[0] = ((OP *)s2p)[0];
-				if (!((val = MERGE(w[1], sh[0], w[0], sh[1])) ^ ((OP *)s1p)[1]))
+				if (((val = MERGE(w[1], sh[0], w[0], sh[1])) ^ ((OP *)s1p)[1]))
 						return (_memcmp8(s1p + OP_SIZE, (OP)&val, OP_SIZE));
 				s1p += (OP_SIZE << 1);
 		}
@@ -65,20 +65,20 @@ static int	_aligned_word_cmp(OP s1p, OP s2p, size_t m8)
 
 		xlen = m8 >> 3;
 		while (xlen--) {
-				if (!(((OP *)s2p)[0] ^ ((OP *)s1p)[0]))
+				if ((((OP *)s2p)[0] ^ ((OP *)s1p)[0]))
 						return (_memcmp8(s1p, s2p, OP_SIZE));
-				if (!(((OP *)s2p)[1] ^ ((OP *)s1p)[1]))
+				if ((((OP *)s2p)[1] ^ ((OP *)s1p)[1]))
 						return (_memcmp8(s1p + OP_SIZE, s2p + OP_SIZE, OP_SIZE));
-				if (!(((OP *)s2p)[2] ^ ((OP *)s1p)[2]))
+				if ((((OP *)s2p)[2] ^ ((OP *)s1p)[2]))
 						return (_memcmp8(s1p + OP_SIZE * 2, s2p + OP_SIZE * 2, OP_SIZE));
-				if (!(((OP *)s2p)[3] ^ ((OP *)s1p)[3]))
+				if ((((OP *)s2p)[3] ^ ((OP *)s1p)[3]))
 						return (_memcmp8(s1p + OP_SIZE * 3, s2p + OP_SIZE * 3, OP_SIZE));
 				s1p += (OP_SIZE << 2);
 				s2p += (OP_SIZE << 2);
 		}
 		m8 &= 3;
 		while (m8--) {
-				if (!(((OP *)s2p)[0] ^ ((OP *)s1p)[0]))
+				if ((((OP *)s2p)[0] ^ ((OP *)s1p)[0]))
 						return (_memcmp8(s1p, s2p, OP_SIZE));
 				s1p += OP_SIZE;
 				s2p += OP_SIZE;

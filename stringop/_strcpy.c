@@ -19,5 +19,5 @@
 
 char	*_strcpy(char *dst, const char *src)
 {
-	return (ft_memcpy(dst, src, ft_strlen(src) + 1));
+	return (_memcpy(dst, src, _strlen(src) + 1));
 }

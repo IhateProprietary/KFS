@@ -24,6 +24,9 @@ static inline void	_memset64(OP dstp, int c, size_t m8)
 
 		mask_set = c << 8 | c;
 		mask_set = (mask_set << 16) | mask_set;
+#if __x86_64__
+		mask_set = ((mask_set << 16) << 16) | mask_set;
+#endif
 		xlen = m8 >> OP_SHIFT;
 		while (xlen--) {
 				((OP *)dstp)[0] = mask_set;

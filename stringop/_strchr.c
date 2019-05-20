@@ -36,6 +36,9 @@ char	*_strchr(const char *str, int c)
 		mask = c & 0xff;
 		mask = (mask << 8) | mask;
 		mask = (mask << 16) | mask;
+#if __x86_64__
+		mask = ((mask << 16) << 16) | mask;
+#endif
 		long_ptr = (OP *)cp;
 		for (;;)
 		{
@@ -62,6 +65,28 @@ char	*_strchr(const char *str, int c)
 								return ((char *)cp);
 						else if (*cp++ == 0)
 								return (0);
+#if __x86_64__
+						else if (*cp == c)
+								return ((char *)cp);
+						else if (*cp++ == 0)
+								return (0);
+
+						else if (*cp == c)
+								return ((char *)cp);
+						else if (*cp++ == 0)
+								return (0);
+
+						else if (*cp == c)
+								return ((char *)cp);
+						else if (*cp++ == 0)
+								return (0);
+						
+						else if (*cp == c)
+								return ((char *)cp);
+						else if (*cp++ == 0)
+								return (0);
+#endif
+
 				}
 				++long_ptr;
 		}

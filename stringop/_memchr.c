@@ -42,6 +42,9 @@ static void *_memchr64(OP dstp, int c, size_t n)
 		hi_magic = HBITS;
 		mask_set = c << 8 | c;
 		mask_set = (mask_set << 16) | mask_set;
+#if __x86_64__
+		mask_set = ((mask_set << 16) << 16) | mask_set;
+#endif
 		xlen = n >> OP_SHIFT;
 		while (xlen--) {
 				if ((((((OP *)dstp)[0] ^ mask_set) - lo_magic) & hi_magic))

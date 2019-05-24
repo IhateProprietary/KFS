@@ -20,6 +20,8 @@
 
 # include "xstdint.h"
 
+# define is_digit(c) (0x30 <= (c) && 0x39 >= (c))
+
 extern void *_memmove(void *, const void *, size_t);
 extern void *_memcpy(void *, const void *, size_t);
 extern void *_memchr(const void *, int, size_t);

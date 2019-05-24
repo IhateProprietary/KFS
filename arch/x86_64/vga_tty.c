@@ -38,11 +38,11 @@ static inline void __vga_scroll_up(void)
 				 ((VGA_HEIGHT - 1) * VGA_WIDTH) * sizeof(*vga_buffer));
 }
 
-void __vga_write(void *mem, u8 color, u32 size)
+ssize_t __vga_write(const void *mem, u8 color, size_t size)
 {
 		register u16 _vgac = color << 8;
 		register u32 idx;
-		u8 *zone = mem;
+		const u8 *zone = mem;
 
 		simple_spin_lock(&_vgalock);
 		for (idx = 0; idx < size; ++idx)
@@ -59,4 +59,5 @@ void __vga_write(void *mem, u8 color, u32 size)
 				}
 		}
 		simple_spin_unlock(&_vgalock);
+		return size;
 }

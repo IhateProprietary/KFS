@@ -35,11 +35,15 @@ extern gdt_flush
 bits 32
 	; the "main"
 _start:
-	mov dword [SCREEN], 0x2f4b2f4f
 	mov esp, _stack_bottom
+	mov ebp, esp
+
+	mov dword [SCREEN], 0x2f4b2f4f
+
 	mov eax, _gdtp
 	push eax
 	call gdt_flush
+
 	mov dword [SCREEN+60], 0x2f4b2f4f
 .L1:
 	hlt

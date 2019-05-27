@@ -37,30 +37,10 @@ extern void _isr17(void);
 extern void _isr18(void);
 extern void _isr19(void);
 extern void _isr20(void);
+extern void _undefined(void);
 
 struct idt_entry idt_entries[256] = {
-/*
-		[IDT_ISR_DIV] = INTGATE((u32)_isr0, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_DEBUG] = INTGATE((u32)_isr1, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_NMI] = INTGATE((u32)_isr2, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_BP] = INTGATE((u32)_isr3, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_OF] = INTGATE((u32)_isr4, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_BE] = INTGATE((u32)_isr5, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_INVOP] = INTGATE((u32)_isr6, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_DNA] = INTGATE((u32)_isr7, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_DF] = INTGATE((u32)_isr8, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_CSO] = INTGATE((u32)_isr9, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_INVTSS] = INTGATE((u32)_isr10, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_SNP] = INTGATE((u32)_isr11, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_SF] = INTGATE((u32)_isr12, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_GP] = INTGATE((u32)_isr13, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_PF] = INTGATE((u32)_isr14, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_FP] = INTGATE((u32)_isr16, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_AC] = INTGATE((u32)_isr17, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_MC] = INTGATE((u32)_isr18, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_SIMDFP] = INTGATE((u32)_isr19, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-		[IDT_ISR_VIRT] = INTGATE((u32)_isr20, IDT_KERNEL_CS, IDT_PVL_KERNEL),
-*/
+		
 };
 
 struct idt _idtp = {
@@ -76,6 +56,40 @@ typedef struct
 				int_no, err_code,
 				eip, cs, eflags, useresp, ss;
 } reg_saved_state_t;
+
+void idt_init(void)
+{
+		static void (*_isr[IDT_ISR_USR_GATE])(void) = {
+				[IDT_ISR_DIV] = _isr0,
+				[IDT_ISR_DEBUG] = _isr1,
+				[IDT_ISR_NMI] = _isr2,
+				[IDT_ISR_BP] = _isr3,
+				[IDT_ISR_OF] = _isr4,
+				[IDT_ISR_BE] = _isr5,
+				[IDT_ISR_INVOP] =  _isr6,
+				[IDT_ISR_DNA] = _isr7,
+				[IDT_ISR_DF] = _isr8,
+				[IDT_ISR_CSO] = _isr9,
+				[IDT_ISR_INVTSS] = _isr10,
+				[IDT_ISR_SNP] = _isr11,
+				[IDT_ISR_SF] = _isr12,
+				[IDT_ISR_GP] = _isr13,
+				[IDT_ISR_PF] = _isr14,
+				[IDT_ISR_FP] = _isr16,
+				[IDT_ISR_AC] = _isr17,
+				[IDT_ISR_MC] = _isr18,
+				[IDT_ISR_SIMDFP] = _isr19,
+				[IDT_ISR_VIRT] = _isr20,
+		};
+		register int n;
+		register u32 base_ptr;
+
+		for (n = 0; n < IDT_ISR_USR_GATE; n++)
+		{
+				base_ptr = (u32)(n[_isr] ? n[_isr] : _undefined);
+				idt_entries[n] = (struct idt_entry)INTGATE(base_ptr, IDT_KERNEL_CS, IDT_PVL_KERNEL);
+		}
+}
 
 void __isr_fault_handler(reg_saved_state_t state)
 {

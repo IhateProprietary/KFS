@@ -101,6 +101,15 @@ FUNCTION = {
         "cdefines": [DEF.RETURN, DEF.ORIGINAL],
         "test_type": 0
     },
+    "strnlen": {
+        "type": [CTYPE.SIZE_T, 0],
+        "argv": [
+            [CTYPE.CHAR, ARGV.SRC, 1],
+            [CTYPE.SIZE_T, ARGV.INT, 0]
+        ],
+        "cdefines": [DEF.RETURN, DEF.ORIGINAL],
+        "test_type": 0
+    },
 }
 
 TEMPLATE="""#include <stdio.h>

@@ -1,9 +1,7 @@
-global _isr_errno
-global _isr_noerrno
-
 section .text
 
 %macro noerr 1
+global _isr%1
 _isr%1:
 	push BYTE 0
 	push BYTE %1
@@ -11,6 +9,7 @@ _isr%1:
 %endmacro
 
 %macro err 1
+global _isr%1
 _isr%1:
 	push BYTE %1
 	jmp isr_common_stub
@@ -36,6 +35,12 @@ _isr%1:
 	noerr 18
 	noerr 19
 	noerr 20
+
+global _undefined
+_undefined:
+	push BYTE 0
+	push BYTE -1
+	jmp isr_common_stub
 
 extern __isr_fault_handler
 

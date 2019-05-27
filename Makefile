@@ -31,6 +31,7 @@ c_object_files := $(patsubst arch/$(arch)/%.c, \
 	build/arch/$(arch)/%.o, $(c_source_files))
 
 stringop := build/libsops.a
+printk := build/printk.o
 
 .PHONY: all clean re run iso
 
@@ -54,12 +55,15 @@ $(iso): $(kernel) $(grub_cfg)
 	$(prefix)grub-mkrescue -o $(iso) build/isofiles
 	rm -r build/isofiles
 
-$(kernel): $(assembly_object_files) $(c_object_files) $(linker_script) $(stringop)
+$(kernel): $(assembly_object_files) $(c_object_files) $(linker_script) $(stringop) $(printk)
 	$(prefix)gcc -T $(linker_script) $(LDFLAGS) -o $(kernel) $(assembly_object_files) \
-					$(c_object_files) -Lbuild -lsops
+					$(printk) $(c_object_files) -Lbuild -lsops
 
 $(stringop):
-	make -C stringop CFLAGS+="$(CFLAGS)" AR=$(prefix)$(AR) CC+=$(prefix)$(CC) TARGET=../$(stringop)
+	make -C stringop CFLAGS+="$(CFLAGS)" AR=$(prefix)$(AR) CC+=$(prefix)$(CC) TARGET=../$@
+
+$(printk):
+	make -C printk CFLAGS+="$(CFLAGS)" AR=$(prefix)$(AR) CC+=$(prefix)$(CC) TARGET=../$@
 
 # compile assembly files
 build/arch/$(arch)/asm/%.o: arch/$(arch)/asm/%.s

@@ -21,7 +21,7 @@
 
 # define vga_write(mem, color, size) __vga_write(mem, color, size)
 # define vga_color(bg, fg) (((bg) << 4) | (fg))
-# define vga_default_color vga(VGA_COLOR_BLACK, VGA_COLOR_WHITE)
+# define vga_default_color vga_color(VGA_COLOR_BLACK, VGA_COLOR_WHITE)
 
 enum __vga_color
 {

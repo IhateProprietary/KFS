@@ -23,8 +23,8 @@
 #define FMT_TYPE_ERROR    	-1
 
 #define FMT_TYPE_USIGNED	0
-#define FMT_TYPE_OCTAL    	FMT_TYPE_UNSIGNED
-#define FMT_TYPE_HEXA    	FMT_TYPE_UNSIGNED
+#define FMT_TYPE_OCTAL    	FMT_TYPE_USIGNED
+#define FMT_TYPE_HEXA    	FMT_TYPE_USIGNED
 
 #define FMT_TYPE_SIGNED		1
 
@@ -71,7 +71,7 @@
 static char printk_buf[PRINTK_BUFSIZE];
 static size_t used;
 
-struct fmt_sepc
+struct fmt_spec
 {
 		va_list args;
 
@@ -86,7 +86,9 @@ struct fmt_sepc
 		u32 val;
 };
 
-asmlinkage int printk(const char *fmt, ...)
+int		vprintk(const char *fmt, va_list args);
+
+__attribute__((regparm(0))) int printk(const char *fmt, ...)
 {
 		int		ret = 0;
 		va_list args;
@@ -113,7 +115,6 @@ static int __adv_atoi(const char **fmt)
 static int _fmt_decode(const char *fmt, struct fmt_spec *opt)
 {
 		const char *old_fmt = fmt;
-		int			idx;
 		int			length;
 
 		opt->flag = 0;
@@ -121,7 +122,8 @@ static int _fmt_decode(const char *fmt, struct fmt_spec *opt)
 		opt->prec = 0;
 		opt->width = 0;
 		opt->__ptr_flag = 0;
-flags:
+
+
 		for (;;) {
 				switch (*fmt++) {
 				case '-': opt->flag |= FMT_FLAG_MINUS; break;
@@ -170,7 +172,7 @@ type:
 		switch (*fmt++) {
 		case 'd': opt->type |= FMT_TYPE_SIGNED;	break;
 		case 'o': opt->base = 8;				break;
-		case 'x': opt->flag |= FMT_FLAG_SMALL;
+		case 'x': opt->flag |= FMT_FLAG_SMALL; __attribute__ ((fallthrough));
 		case 'X': opt->base = 16;				break;
 		case 'c': opt->type |= FMT_TYPE_CHAR;	goto getval;
 		case 's': opt->type |= FMT_TYPE_STRING; goto getval;
@@ -179,11 +181,10 @@ type:
 		}
 
 		switch (length) {
-		case 'L': opt->type |= FMT_FLAG_XLONG;    break;
-		case 'l': opt->type |= FMT_FLAG_LONG;     break;
-		case 'h': opt->type |= FMT_FLAG_SHORT;    break;
-		case 'H': opt->type |= FMT_FLAG_XSHORT;   break;
-		default:
+		case 'L': opt->type |= FMT_FLAG_XLONG;    goto getval;
+		case 'l': opt->type |= FMT_FLAG_LONG;     goto getval;
+		case 'h': opt->type |= FMT_FLAG_SHORT;    goto getval;
+		case 'H': opt->type |= FMT_FLAG_XSHORT;   goto getval;
 		}
 fmt_ptr:
 		// todo
@@ -194,7 +195,7 @@ getval:
 		case FMT_TYPE_PTR:
 		case FMT_TYPE_ULONG:
 		case FMT_TYPE_UXLONG:
-		case FMT_TYPE_UNSIGNED:
+		case FMT_TYPE_USIGNED:
 				opt->val = va_arg(opt->args, u32);
 				break ;
 		case FMT_TYPE_USHORT:
@@ -214,11 +215,15 @@ getval:
 		case FMT_TYPE_CHAR:
 		case FMT_TYPE_SXSHORT:
 				opt->val = (s32)va_arg(opt->args, s8);
-				break ;
-		default:
 		}
 end:
 		return fmt - old_fmt;
+}
+
+static void _put_flush()
+{
+		__vga_write(printk_buf, vga_default_color, used);
+		used = 0;
 }
 
 static int _put_repeat(int c, size_t times)
@@ -228,7 +233,7 @@ static int _put_repeat(int c, size_t times)
 		if (times + used > PRINTK_BUFSIZE) {
 				_put_flush();
 				if (times >= PRINTK_BUFSIZE)
-						memset(printk_buf, c, PRINTK_BUF);
+						_memset(printk_buf, c, PRINTK_BUFSIZE);
 				for (; remainder > PRINTK_BUFSIZE;
 					 remainder -= PRINTK_BUFSIZE) {
 						__vga_write(printk_buf,
@@ -236,11 +241,11 @@ static int _put_repeat(int c, size_t times)
 									PRINTK_BUFSIZE);
 				}
 		}
-		memset(printk_buf + used, c, remainder);
+		_memset(printk_buf + used, c, remainder);
 		return times;
 }
 
-static int _put_buffer(void *s, size_t size)
+static int _put_buffer(const void *s, size_t size)
 {
 		size_t remainder = size;
 		size_t offset = 0;
@@ -258,12 +263,6 @@ static int _put_buffer(void *s, size_t size)
 		return size;
 }
 
-static void _put_flush()
-{
-		__vga_write(printk_buf, vga_default_color, used);
-		used = 0;
-}
-
 static int _print_numbers(struct fmt_spec *opt)
 {
 		static char _itoabuf[64];
@@ -279,13 +278,13 @@ static int _print_numbers(struct fmt_spec *opt)
 				if (neg) {
 						val = -val;
 						sign = '-';
-						opt->field_width--;
+						opt->width--;
 				} else if (plus_flag(opt->flag)) {
 						sign = '+';
-						opt->field_width--;
+						opt->width--;
 				} else if (space_flag(opt->flag)) {
 						sign = ' ';
-						opt->field_width--;
+						opt->width--;
 				}
 		}
 
@@ -309,7 +308,7 @@ static int _print_numbers(struct fmt_spec *opt)
 
 		if (prec_flag(opt->flag)) {
 				opt->flag &= ~FMT_FLAG_ZERO;
-				if (bufsize < opt->prec)
+				if (bufsize < (size_t)opt->prec)
 						opt->prec = bufsize;
 		}
 		opt->width -= opt->prec;
@@ -390,6 +389,7 @@ int		vprintk(const char *fmt, va_list args)
 		struct fmt_spec opt;
 		int wrote = 0;
 
+		opt.args = args;
 		for (cfmt = _strchr(fmt, '%');						\
 			 0 != cfmt;										\
 			 old_fmt = cfmt, cfmt = _strchr(cfmt, '%')) {
@@ -397,18 +397,19 @@ int		vprintk(const char *fmt, va_list args)
 
 				cfmt += ret;
 
-				switch (opt->type) {
+				switch (opt.type) {
 				case FMT_TYPE_ERROR:
 						wrote += _put_buffer(old_fmt, cfmt - old_fmt);
 						break ;
 				case FMT_TYPE_CHAR:
-						wrote += _print_char(opt);
+						wrote += _print_char(&opt);
 						break ;
 				case FMT_TYPE_STRING:
-						wrote += _print_string(opt);
+						wrote += _print_string(&opt);
 						break ;
 				case FMT_TYPE_PTR:
-						wrote += _print_ptr(opt);
+						wrote += _print_ptr(&opt);
+						break ;
 				default:
 						wrote += _print_numbers(&opt);
 				}

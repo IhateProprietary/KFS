@@ -32,13 +32,16 @@ section .text
 global _start
 extern _gdtp
 extern gdt_flush
+extern printk
 bits 32
 	; the "main"
 _start:
 	mov esp, _stack_bottom
-	mov ebp, esp
+;	mov ebp, esp
 
-	mov dword [SCREEN], 0x2f4b2f4f
+;	push _fmt
+;	push _smth
+;	call printk
 
 	mov eax, _gdtp
 	push eax
@@ -48,3 +51,7 @@ _start:
 .L1:
 	hlt
 	jmp .L1
+
+section .data
+_fmt: db "%s\n", 0
+_smth: db "test", 0

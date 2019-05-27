@@ -32,10 +32,15 @@ static u16 cursey = 0;
 
 static _spin_lock_t _vgalock;
 
+/*
+ * Scroll up by one, and clears "cache" from vga buffer
+ */
 static inline void __vga_scroll_up(void)
 {
 		_memmove(vga_buffer, vga_buffer + (VGA_WIDTH),					\
 				 ((VGA_HEIGHT - 1) * VGA_WIDTH) * sizeof(*vga_buffer));
+
+		_memset(vga_buffer + VGA_WIDTH * (VGA_HEIGHT - 1), 0, VGA_WIDTH);
 }
 
 ssize_t __vga_write(const void *mem, u8 color, size_t size)
@@ -47,8 +52,15 @@ ssize_t __vga_write(const void *mem, u8 color, size_t size)
 		simple_spin_lock(&_vgalock);
 		for (idx = 0; idx < size; ++idx)
 		{
-				_vgac = (_vgac & ~0xff) | idx[zone];
-				__vga_putchar(_vgac);
+				switch (idx[zone]) {
+				case 0xa:
+						++cursey;
+						cursex = 0;
+						break ;
+				default:
+						_vgac = (_vgac & ~0xff) | idx[zone];
+						__vga_putchar(_vgac);
+				}
 				if (cursex >= VGA_WIDTH) {
 						cursex = 0;
 						++cursey;

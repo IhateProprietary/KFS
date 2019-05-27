@@ -17,42 +17,53 @@
 
 #include "private_stringop.h"
 
-size_t		_strlen(const char *str)
+size_t		_strnlen(const char *str, size_t n)
 {
-		OP		*long_ptr;
-		OP		val;
-		char	*cp;
+		OP			*long_ptr;
+		OP			val;
+		const char	*cp;
+		const char	*end = str + n;
+
+		if (n == 0)
+				return 0;
+
+		if (__builtin_expect(end < str, 0))
+				end = (char *)~0UL;
 
 		cp = (char *)str;
+
 		while ((OP)cp & OP_MASK) {
 				if (*cp == 0)
-						return (cp - str);
+						goto end;
 				++cp;
 		}
 		long_ptr = (OP *)cp;
-		for (;;) {
-				val = *long_ptr;
+		val = *long_ptr;
+		for (;(char *)long_ptr < end;
+			 val = *++long_ptr, cp = (char *)long_ptr) {
 				if ((val - LBITS) & HBITS) {
-						cp = (char *)long_ptr;
 						if (*cp == 0)
-								return (cp - str);
+								break ;
 						if (*++cp == 0)
-								return (cp - str);
+								break ;
 						if (*++cp == 0)
-								return (cp - str);
+								break ;
 						if (*++cp == 0)
-								return (cp - str);
+								break ;
 #if __x86_64__
 						if (*++cp == 0)
-								return (cp - str);
+								break ;
 						if (*++cp == 0)
-								return (cp - str);
+								break ;
 						if (*++cp == 0)
-								return (cp - str);
+								break ;
 						if (*++cp == 0)
-								return (cp - str);
+								break ;
 #endif
 				}
-				++long_ptr;
 		}
+end:
+		if (cp > end)
+				cp = end;
+		return (cp - str);
 }

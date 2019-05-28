@@ -4,13 +4,16 @@ global simple_spin_unlock
 section .text
 
 simple_spin_lock:
+	mov edx, [esp + 4]
+.L1:
 	mov eax, 1
-	xchg eax, [esp + 4]
+	xchg eax, [edx]
 	test eax, eax
-	jnz simple_spin_lock
+	jnz .L1
 	ret
 
 simple_spin_unlock:
+	mov edx, [esp + 4]
 	xor eax, eax
-	xchg eax, [esp + 4]
+	xchg eax, [edx]
 	ret

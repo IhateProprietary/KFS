@@ -17,7 +17,7 @@
 
 #include "dt/gdt.h"
 
-struct gdt_entry	gdt_entries[GDT_NENTRY] = {
+struct gdt_entry	gdt_entries[] = {
 		{0, 0, 0, {0}, {0}, 0},
 		/* Kernel code segment */
 		(struct gdt_entry){
@@ -41,6 +41,18 @@ struct gdt_entry	gdt_entries[GDT_NENTRY] = {
 							   GDT_ACCESS_DT),
 				.gdt_gran = (GDT_GRAN_32BIT | GDT_GRAN_EXPND | 0xF)
 		},
+		/* Kernel stack segment, reversed */
+		(struct gdt_entry){
+				.limit_low = 0xFFFF,
+				.base_low = 0,
+				.base_middle = 0,
+				.base_high = 0,
+				.gdt_access = (GDT_ACCESS_RW | GDT_ACCESS_P |			\
+							   GDT_ACCESS_RING(GDT_PVL_KERNEL) |		\
+							   GDT_ACCESS_DC |							\
+							   GDT_ACCESS_DT),
+				.gdt_gran = (GDT_GRAN_32BIT | GDT_GRAN_EXPND | 0xF)
+		},
 		/* User code segment */
 		(struct gdt_entry){
 				.limit_low = 0xFFFF,
@@ -61,9 +73,21 @@ struct gdt_entry	gdt_entries[GDT_NENTRY] = {
 							   GDT_ACCESS_RING(GDT_PVL_USER) | GDT_ACCESS_DT),
 				.gdt_gran = (GDT_GRAN_32BIT | GDT_GRAN_EXPND | 0xF),
 		},
+		/* User stack segment, reversed */
+		(struct gdt_entry){
+				.limit_low = 0xFFFF,
+				.base_low = 0,
+				.base_middle = 0,
+				.base_high = 0,
+				.gdt_access = (GDT_ACCESS_RW | GDT_ACCESS_P |			\
+							   GDT_ACCESS_RING(GDT_PVL_KERNEL) |		\
+							   GDT_ACCESS_DC |							\
+							   GDT_ACCESS_DT),
+				.gdt_gran = (GDT_GRAN_32BIT | GDT_GRAN_EXPND | 0xF)
+		},
 };
 
 struct gdt			_gdtp = {
-		.limit = sizeof(gdt_entries),
+		.limit = sizeof(gdt_entries) - 1,
 		.entp = (u32)gdt_entries
 };

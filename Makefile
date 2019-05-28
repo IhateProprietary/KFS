@@ -6,13 +6,12 @@ AS = nasm
 ASFLAGS = -felf
 
 CC = gcc
-CFLAGS = -nodefaultlibs -fno-builtin -fno-exceptions -fno-stack-protector -fno-rtti -nostdlib -Wall -Wextra -m32 -O2
 
 LDFLAGS = -ffreestanding -O2 -nostdlib -lgcc
 
 CFLAGS = -fno-builtin -fno-exceptions -fno-stack-protector \
-		-nostdlib -nodefaultlibs \
-		-std=gnu99 -ffreestanding -O2 -Wall -Wextra
+		-nostdlib -nodefaultlibs  \
+		-std=gnu99 -ffreestanding -m32 -O2 -Wall -Wextra -g3
 
 arch ?= $(shell uname -m)
 kernel := build/kernel-$(arch).bin
@@ -63,13 +62,13 @@ $(stringop):
 	make -C stringop CFLAGS+="$(CFLAGS)" AR=$(prefix)$(AR) CC+=$(prefix)$(CC) TARGET=../$@
 
 $(printk):
-	make -C printk CFLAGS+="$(CFLAGS)" AR=$(prefix)$(AR) CC+=$(prefix)$(CC) TARGET=../$@
+	make -C printk CFLAGS+="$(CFLAGS)" CC+=$(prefix)$(CC) TARGET=../$@
 
 # compile assembly files
 build/arch/$(arch)/asm/%.o: arch/$(arch)/asm/%.s
-	mkdir -p $(shell dirname $@)
+	@mkdir -p $(shell dirname $@)
 	$(AS) $(ASFLAGS) $< -o $@
 
 build/arch/$(arch)/%.o: arch/$(arch)/%.c
-	mkdir -p $(shell dirname $@)
+	@mkdir -p $(shell dirname $@)
 	$(prefix)$(CC) $(CFLAGS) -c $< -o $@ -Iinclude

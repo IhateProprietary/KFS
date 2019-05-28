@@ -4,10 +4,9 @@ OBJ		=	$(addsuffix .o, $(basename $(SRC)))
 
 all: $(TARGET)
 
-$(TARGET): $(OBJ)
-	$(AR) -rcs $@ $(OBJ)
-
-%.o : %.c
+$(TARGET) : $(OBJ)
+	mv $< $@
+%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $< -I../include
 
 clean:

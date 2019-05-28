@@ -199,10 +199,10 @@ getval:
 				opt->val = va_arg(opt->args, u32);
 				break ;
 		case FMT_TYPE_USHORT:
-				opt->val = va_arg(opt->args, u16);
+				opt->val = (u16)va_arg(opt->args, int);
 				break ;
 		case FMT_TYPE_UXSHORT:
-				opt->val = va_arg(opt->args, u8);
+				opt->val = (u8)va_arg(opt->args, int);
 				break ;
 		case FMT_TYPE_SLONG:
 		case FMT_TYPE_SXLONG:
@@ -210,11 +210,11 @@ getval:
 				opt->val = va_arg(opt->args, s32);
 				break ;
 		case FMT_TYPE_SSHORT:
-				opt->val = (s32)va_arg(opt->args, s16);
+				opt->val = (s16)va_arg(opt->args, int);
 				break ;
 		case FMT_TYPE_CHAR:
 		case FMT_TYPE_SXSHORT:
-				opt->val = (s32)va_arg(opt->args, s8);
+				opt->val = (s8)va_arg(opt->args, int);
 		}
 end:
 		return fmt - old_fmt;
@@ -242,6 +242,7 @@ static int _put_repeat(int c, size_t times)
 				}
 		}
 		_memset(printk_buf + used, c, remainder);
+		used += remainder;
 		return times;
 }
 
@@ -260,6 +261,7 @@ static int _put_buffer(const void *s, size_t size)
 				}
 		}
 		_memcpy(printk_buf + used, s + offset, remainder);
+		used += size;
 		return size;
 }
 
@@ -392,10 +394,11 @@ int		vprintk(const char *fmt, va_list args)
 		opt.args = args;
 		for (cfmt = _strchr(fmt, '%');						\
 			 0 != cfmt;										\
-			 old_fmt = cfmt, cfmt = _strchr(cfmt, '%')) {
+			 cfmt = _strchr(cfmt, '%')) {
 				int ret = _fmt_decode(cfmt, &opt);
 
 				cfmt += ret;
+				old_fmt = cfmt;
 
 				switch (opt.type) {
 				case FMT_TYPE_ERROR:
@@ -414,5 +417,7 @@ int		vprintk(const char *fmt, va_list args)
 						wrote += _print_numbers(&opt);
 				}
 		}
+		wrote += _put_buffer(old_fmt, _strlen(old_fmt));
+		_put_flush();
 		return wrote;
 }

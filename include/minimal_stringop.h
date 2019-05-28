@@ -29,7 +29,7 @@ extern int _memcmp(const void *, const void *, size_t);
 extern void *_memset(void *, int, size_t);
 
 extern size_t _strlen(const char *);
-extern size_t _strlnen(const char *, size_t);
+extern size_t _strnlen(const char *, size_t);
 extern int _strcmp(const char *, const char *);
 extern char *_strcpy(char *, const char *);
 extern char *_strchr(const char *, int);

@@ -30,11 +30,12 @@ static u16 *vga_buffer = (u16 *)0xb8000;
 static u16 cursex = 0;
 static u16 cursey = 0;
 
-static _spin_lock_t _vgalock;
+static _spin_lock_t _vgalock = 0;
 
 /*
  * Scroll up by one, and clears "cache" from vga buffer
  */
+
 static inline void __vga_scroll_up(void)
 {
 		_memmove(vga_buffer, vga_buffer + (VGA_WIDTH),					\

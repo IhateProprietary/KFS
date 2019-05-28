@@ -18,28 +18,28 @@
 #ifndef __XSTDINT_H__
 # define __XSTDINT_H__
 
-typedef __UINT_FAST32_TYPE__ u32;
-typedef __UINT_FAST16_TYPE__ u16;
-typedef __UINT_FAST8_TYPE__ u8;
+typedef __UINT_LEAST32_TYPE__ u32;
+typedef __UINT_LEAST16_TYPE__ u16;
+typedef __UINT_LEAST8_TYPE__ u8;
 
-typedef __INT_FAST32_TYPE__ s32;
-typedef __INT_FAST16_TYPE__ s16;
-typedef __INT_FAST8_TYPE__ s8;
+typedef __INT_LEAST32_TYPE__ s32;
+typedef __INT_LEAST16_TYPE__ s16;
+typedef __INT_LEAST8_TYPE__ s8;
 
 # if __x86_64__
-typedef __UINT_FAST64_TYPE__ u64;
-typedef __INT_FAST64_TYPE__ s64;
+typedef __UINT_LEAST64_TYPE__ u64;
+typedef __INT_LEAST64_TYPE__ s64;
 typedef u64 size_t;
 typedef s64 ssize_t;
 #  define __SIZEOF_SIZE_T__ 8
-#  define __SIZE_T_WIDTH__ __UINT_FAST64_WIDTH__
-#  define __SIZE_T_MAX__ __UINT_FAST64_MAX__
+#  define __SIZE_T_WIDTH__ __UINT_LEAST64_WIDTH__
+#  define __SIZE_T_MAX__ __UINT_LEAST64_MAX__
 # else
 typedef u32 size_t;
 typedef s32 ssize_t;
 #  define __SIZEOF_SIZE_T__ 4
-#  define __SIZE_T_WIDTH__ __UINT_FAST32_WIDTH__
-#  define __SIZE_T_MAX__ __UINT_FAST32_MAX__
+#  define __SIZE_T_WIDTH__ __UINT_LEAST32_WIDTH__
+#  define __SIZE_T_MAX__ __UINT_LEAST32_MAX__
 # endif
 
 #endif

@@ -20,8 +20,6 @@
 
 # include "xstdint.h"
 
-# define GDT_NENTRY 5
-
 # define GDT_ACCESS_RW 0x02
 # define GDT_ACCESS_DC 0x04
 # define GDT_ACCESS_EX 0x08
@@ -76,7 +74,7 @@ typedef union gdt_access_u
 {
 		u8						access;
 		struct gdt_access_bits	bits;
-}  gdt_access_t;
+} __attribute__((packed)) gdt_access_t;
 
 # define GDT_GRAN_64BIT 0x20
 # define GDT_GRAN_32BIT 0x40
@@ -101,7 +99,7 @@ typedef union gdt_granular_u
 		u8							gran;
 		struct gdt_granular_bits	bits;
 		
-}  gdt_granular_t;
+} __attribute__((packed)) gdt_granular_t;
 
 struct gdt_entry
 {

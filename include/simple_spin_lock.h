@@ -17,9 +17,9 @@
 
 #ifndef __SIMPLE_SPIN_LOCK_H__
 # define __SIMPLE_SPIN_LOCK_H__
-# include <stdatomic.h>
+# include "xstdint.h"
 
-typedef atomic_uint_fast32_t _spin_lock_t;
+typedef u32 _spin_lock_t;
 
 extern void simple_spin_lock(_spin_lock_t *lock);
 extern void simple_spin_trylock(_spin_lock_t *lock);

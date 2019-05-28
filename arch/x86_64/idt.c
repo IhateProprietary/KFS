@@ -16,6 +16,7 @@
  */
 
 #include "dt/idt.h"
+#include "kernel.h"
 
 extern void _isr0(void);
 extern void _isr1(void);
@@ -44,18 +45,9 @@ struct idt_entry idt_entries[256] = {
 };
 
 struct idt _idtp = {
-		.limit = sizeof(idt_entries),
+		.limit = sizeof(idt_entries) - 1,
 		.entp = (u32)idt_entries
 };
-
-/* stack in reverse order? */
-typedef struct
-{
-		u32		ds,
-				edi, esi, ebp, esp, ebx, edx, ecx, eax,
-				int_no, err_code,
-				eip, cs, eflags, useresp, ss;
-} reg_saved_state_t;
 
 void idt_init(void)
 {
@@ -91,6 +83,15 @@ void idt_init(void)
 		}
 }
 
+/* stack in reverse order? */
+typedef struct
+{
+		u32		ss, gs ,fs, es, ds,
+				edi, esi, ebp, esp, ebx, edx, ecx, eax,
+				int_no, err_code,
+				eip, cs, eflags, useresp, userss;
+} reg_saved_state_t;
+
 void __isr_fault_handler(reg_saved_state_t state)
 {
 		static const char *strerr[IDT_ISR_USR_GATE] = {
@@ -115,4 +116,10 @@ void __isr_fault_handler(reg_saved_state_t state)
 				[IDT_ISR_SIMDFP] = "SIMD floating point exception",
 				[IDT_ISR_VIRT] = "Virtualization exception",
 		};
+		const char *_errorlog = "Unregistered Interrupt Handler";
+
+		if (strerr[state.int_no])
+				_errorlog = strerr[state.int_no];
+
+		printk("Interrupt: 0x%x Error: %s\n", state.int_no, _errorlog);
 }

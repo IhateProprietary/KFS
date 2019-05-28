@@ -20,8 +20,8 @@
 #include "minimal_vga_tty.h"
 #include "xstdint.h"
 
-#define VGA_HEIGHT 80
-#define VGA_WIDTH 25
+#define VGA_HEIGHT 25
+#define VGA_WIDTH 80
 
 #define __vga_putchar(c)									\
 		*(vga_buffer + (VGA_WIDTH * cursey) + cursex++) = (c)

@@ -29,12 +29,12 @@
 #  define LBITS 0x101010101010101L
 #  define HBITS 0x8080808080808080L
 
-#  define size_t __UINT_FAST64_TYPE__
-#  define OP __UINT_FAST64_TYPE__
+#  define size_t __UINT_LEAST64_TYPE__
+#  define OP __UINT_LEAST64_TYPE__
 #   if defined(__clang__)
-#    define OP_WIDTH (sizeof(__UINT_FAST64_TYPE__) * 8)
+#    define OP_WIDTH (sizeof(__UINT_LEAST64_TYPE__) * 8)
 #   elif defined(__GNUC__)
-#    define OP_WIDTH __INT_FAST64_WIDTH__
+#    define OP_WIDTH __INT_LEAST64_WIDTH__
 #  endif
 #  define OP_SHIFT 3
 # else
@@ -42,17 +42,17 @@
 #  define LBITS 0x1010101L
 #  define HBITS 0x80808080L
 
-#  define size_t __UINT_FAST32_TYPE__
-#  define OP __UINT_FAST32_TYPE__
+#  define size_t __UINT_LEAST32_TYPE__
+#  define OP __UINT_LEAST32_TYPE__
 #   if defined(__clang__)
-#    define OP_WIDTH (sizeof(__UINT_FAST32_TYPE__) * 8)
+#    define OP_WIDTH (sizeof(__UINT_LEAST32_TYPE__) * 8)
 #   elif defined(__GNUC__)
-#    define OP_WIDTH __INT_FAST32_WIDTH__
+#    define OP_WIDTH __INT_LEAST32_WIDTH__
 #  endif
 #  define OP_SHIFT 2
 # endif  /* arch check  */
 
-# define u8 __UINT_FAST8_TYPE__
+# define u8 __UINT_LEAST8_TYPE__
 # define OP_SIZE sizeof(OP)
 # define OP_MASK (OP_SIZE - 1)
 

@@ -118,14 +118,13 @@ static int _fmt_decode(const char *fmt, struct fmt_spec *opt)
 		int			length;
 
 		opt->flag = 0;
-		opt->type = FMT_TYPE_ERROR;
+		opt->type = 0;
 		opt->prec = 0;
 		opt->width = 0;
 		opt->__ptr_flag = 0;
 
-
 		for (;;) {
-				switch (*fmt++) {
+				switch (*++fmt) {
 				case '-': opt->flag |= FMT_FLAG_MINUS; break;
 				case '+': opt->flag |= FMT_FLAG_PLUS;  break; 
 				case ' ': opt->flag |= FMT_FLAG_SPACE; break;
@@ -140,20 +139,19 @@ field_width:
 				opt->width = va_arg(opt->args, int);
 				if (0 > opt->width) {
 						opt->flag |= FMT_FLAG_MINUS;
-						opt->width = (~(opt->width) & __INT_FAST16_MAX__) + 1;
+						opt->width = (~(opt->width) & __INT_LEAST16_MAX__) + 1;
 				}
 				goto precision;
 		}
-		opt->width = __adv_atoi(&fmt);
-
+		if (is_digit(*fmt))
+				opt->width = __adv_atoi(&fmt);
 precision:
 		if ('.' != *fmt)
 				goto qualifier;
-		++fmt;
 		opt->flag |= FMT_FLAG_PREC;
 		if ('*' == *fmt) {
 				++fmt;
-				opt->prec = va_arg(opt->args, int) & __INT_FAST16_MAX__;
+				opt->prec = va_arg(opt->args, int) & __INT_LEAST16_MAX__;
 				goto qualifier;
 		}
 		opt->prec = __adv_atoi(&fmt);
@@ -177,7 +175,7 @@ type:
 		case 'c': opt->type |= FMT_TYPE_CHAR;	goto getval;
 		case 's': opt->type |= FMT_TYPE_STRING; goto getval;
 		case 'p': opt->type |= FMT_TYPE_PTR;	goto fmt_ptr;
-		default: goto end;
+		default:  opt->type = FMT_TYPE_ERROR;   goto end;
 		}
 
 		switch (length) {
@@ -303,7 +301,7 @@ static int _print_numbers(struct fmt_spec *opt)
 						*--buf = hexbase[val & (base - 1)];
 		}
 
-		bufsize = (_itoabuf + 64) - ++buf;
+		bufsize = (_itoabuf + 64) - buf;
 
 		if (minus_flag(opt->flag))
 				opt->flag &= ~FMT_FLAG_ZERO;
@@ -387,22 +385,24 @@ static int _print_ptr(struct fmt_spec *opt)
 int		vprintk(const char *fmt, va_list args)
 {
 		const char *cfmt;
-		const char *old_fmt = fmt;
 		struct fmt_spec opt;
+		int ret = 0;
 		int wrote = 0;
 
 		opt.args = args;
 		for (cfmt = _strchr(fmt, '%');						\
 			 0 != cfmt;										\
 			 cfmt = _strchr(cfmt, '%')) {
-				int ret = _fmt_decode(cfmt, &opt);
+				wrote += _put_buffer(fmt, cfmt - fmt);
+
+				ret = _fmt_decode(cfmt, &opt);
 
 				cfmt += ret;
-				old_fmt = cfmt;
+				fmt = cfmt;
 
 				switch (opt.type) {
 				case FMT_TYPE_ERROR:
-						wrote += _put_buffer(old_fmt, cfmt - old_fmt);
+						wrote += _put_buffer(cfmt - ret, ret);
 						break ;
 				case FMT_TYPE_CHAR:
 						wrote += _print_char(&opt);
@@ -417,7 +417,7 @@ int		vprintk(const char *fmt, va_list args)
 						wrote += _print_numbers(&opt);
 				}
 		}
-		wrote += _put_buffer(old_fmt, _strlen(old_fmt));
+		wrote += _put_buffer(fmt, _strlen(fmt));
 		_put_flush();
 		return wrote;
 }

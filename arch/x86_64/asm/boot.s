@@ -24,34 +24,41 @@ __multi_header_end:
 
 section .bss
 	; 4096 * 4 (dual word)
+	; 16Kbyte stack
 _stack_top:
 	resd 4096
 _stack_bottom:
 
 section .text
 global _start
+
 extern _gdtp
 extern gdt_flush
 extern printk
-bits 32
+extern __vga_write
+
 	; the "main"
 _start:
 	mov esp, _stack_bottom
-;	mov ebp, esp
-
-;	push _fmt
-;	push _smth
-;	call printk
+	mov ebp, esp
 
 	mov eax, _gdtp
 	push eax
 	call gdt_flush
 
-	mov dword [SCREEN+60], 0x2f4b2f4f
+	pop eax
+	sub esp, 4
+
+	push _gdtp
+	push _gdt_ok
+	push _fmt
+	call printk
+
+	add esp, 16
 .L1:
 	hlt
 	jmp .L1
 
-section .data
-_fmt: db "%s\n", 0
-_smth: db "test", 0
+section .rodata
+_fmt: db "%s  0x%x", 0xa, 0
+_gdt_ok: db "GDT OK", 0

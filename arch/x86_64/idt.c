@@ -89,7 +89,9 @@ typedef struct
 		u32		ss, gs ,fs, es, ds,
 				edi, esi, ebp, esp, ebx, edx, ecx, eax,
 				int_no, err_code,
-				eip, cs, eflags, useresp, userss;
+				eip, cs, eflags,
+		// if DPL == 0x3
+				useresp, userss;
 } reg_saved_state_t;
 
 void __isr_fault_handler(reg_saved_state_t state)

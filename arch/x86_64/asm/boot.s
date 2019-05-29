@@ -69,7 +69,7 @@ _start:
 		call printk
 		mov esp, ebp
 
-		int 0x03
+		int 0x00
 .L1:
 		hlt
 		jmp .L1

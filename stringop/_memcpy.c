@@ -24,7 +24,7 @@ static void	_word_copy_dest_aligned(OP dstp, OP srcp, size_t m8)
 		int		sh[2];
 
 		xlen = m8 >> 1;
-		sh[0] = (srcp & OP_MASK) * OP_SIZE;
+		sh[0] = (srcp & OP_MASK) * 8;
 		sh[1] = OP_WIDTH - sh[0];
 		srcp &= ~OP_MASK;
 		w[0] = ((OP *)srcp)[0];

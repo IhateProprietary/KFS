@@ -302,6 +302,10 @@ static int _print_numbers(struct fmt_spec *opt)
 		}
 
 		bufsize = (_itoabuf + 64) - buf;
+		if (bufsize == 0) {
+				*--buf = '0';
+				bufsize = 1;
+		}
 
 		if (minus_flag(opt->flag))
 				opt->flag &= ~FMT_FLAG_ZERO;

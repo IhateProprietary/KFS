@@ -148,6 +148,7 @@ field_width:
 precision:
 		if ('.' != *fmt)
 				goto qualifier;
+		++fmt;
 		opt->flag |= FMT_FLAG_PREC;
 		if ('*' == *fmt) {
 				++fmt;
@@ -168,6 +169,7 @@ qualifier:
 type:
 		opt->base = 10;
 		switch (*fmt++) {
+		case 'u': opt->type |= FMT_TYPE_USIGNED; break;
 		case 'd': opt->type |= FMT_TYPE_SIGNED;	break;
 		case 'o': opt->base = 8;				break;
 		case 'x': opt->flag |= FMT_FLAG_SMALL; __attribute__ ((fallthrough));

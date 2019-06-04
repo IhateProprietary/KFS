@@ -32,3 +32,21 @@ https://www.amd.com/system/files/TechDocs/24594.pdf
 
 some other UNIX kernel tutorial
 http://www.jamesmolloy.co.uk/tutorial_html/
+
+ACPI 5.0 specification
+(ACPI ver >= 2.0)
+http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
+
+ACPI 1.0 specification
+(ACPI ver == 1.0(b))
+http://www.acpi.info/DOWNLOADS/ACPIspec10b.pdf
+
+PIC / APIC
+https://www.rigacci.org/wiki/doku.php/doc/appunti/linux/sa/irq_acpi_apic
+
+TLDR;
+PIC is legacy
+APIC is the "upgraded version" to resolve multiprocessor PIC problem
+
+APIC ACPI tables
+http://ethv.net/workshops/osdev/notes/

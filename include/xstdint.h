@@ -21,14 +21,14 @@
 typedef __UINT_LEAST32_TYPE__ u32;
 typedef __UINT_LEAST16_TYPE__ u16;
 typedef __UINT_LEAST8_TYPE__ u8;
+typedef __UINT_LEAST64_TYPE__ u64;
 
 typedef __INT_LEAST32_TYPE__ s32;
 typedef __INT_LEAST16_TYPE__ s16;
 typedef __INT_LEAST8_TYPE__ s8;
+typedef __INT_LEAST64_TYPE__ s64;
 
 # if __x86_64__
-typedef __UINT_LEAST64_TYPE__ u64;
-typedef __INT_LEAST64_TYPE__ s64;
 typedef u64 size_t;
 typedef s64 ssize_t;
 #  define __SIZEOF_SIZE_T__ 8

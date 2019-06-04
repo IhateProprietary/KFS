@@ -90,7 +90,7 @@ typedef struct
 				edi, esi, ebp, esp, ebx, edx, ecx, eax,
 				int_no, err_code,
 				eip, cs, eflags,
-		// if DPL == 0x3
+		/* if context switch */
 				useresp, userss;
 } reg_saved_state_t;
 

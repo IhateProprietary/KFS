@@ -119,7 +119,7 @@ _start:
 section .rodata
 _fail: db "ACPI fatal error", 0xa, 0
 _fmt: db "%s  0x%x", 0xa, 0
-_gdt_ok: db "GDT OK", 0
+_gdt_ok: db "GDT ", 0xe, "f4OK", 0xe, "f7", 0
 _idt_ok: db "IDT OK", 0
 _fmt2: db "eax 0x%x ebx 0x%x eflag 0x%x", 0xa, 0
 _APIC_s: db "APIC"

@@ -1,11 +1,15 @@
 ifeq ($(shell uname -s), Darwin)
-	prefix := i386-elf-
+	CC := i386-elf-gcc
+	GRUB := i386-elf-grub
+	AR := i386-elf-ar
+else
+	CC := i686-elf-gcc
+	GRUB := grub
+	AR := ar
 endif
 
 AS = nasm
 ASFLAGS = -felf
-
-CC = gcc
 
 LDFLAGS = -ffreestanding -O2 -nostdlib -lgcc
 
@@ -13,7 +17,8 @@ CFLAGS = -fno-builtin -fno-exceptions -fno-stack-protector \
 		-nostdlib -nodefaultlibs  \
 		-std=gnu99 -ffreestanding -m32 -Wall -Wextra -g3
 
-arch ?= $(shell uname -m)
+arch = x86
+
 kernel := build/kernel-$(arch).bin
 
 iso := build/os-$(arch).iso
@@ -48,21 +53,21 @@ re: clean all
 iso: $(iso)
 
 $(iso): $(kernel) $(grub_cfg)
-	mkdir -p build/isofiles/boot/grub
+	@mkdir -p build/isofiles/boot/grub
 	cp $(kernel) build/isofiles/boot/kernel.bin
 	cp $(grub_cfg) build/isofiles/boot/grub
-	$(prefix)grub-mkrescue -o $(iso) build/isofiles
+	$(GRUB)-mkrescue -o $(iso) build/isofiles
 	rm -r build/isofiles
 
 $(kernel): $(assembly_object_files) $(c_object_files) $(linker_script) $(stringop) $(printk)
-	$(prefix)gcc -T $(linker_script) $(LDFLAGS) -o $(kernel) $(assembly_object_files) \
+	$(CC) -T $(linker_script) $(LDFLAGS) -o $(kernel) $(assembly_object_files) \
 					$(printk) $(c_object_files) -Lbuild -lsops
 
 $(stringop):
-	make -C stringop CFLAGS+="$(CFLAGS)" AR=$(prefix)$(AR) CC+=$(prefix)$(CC) TARGET=../$@
+	make -C stringop CFLAGS+="$(CFLAGS)" AR=$(AR) CC+=$(CC) TARGET=../$@
 
 $(printk):
-	make -C printk CFLAGS+="$(CFLAGS)" CC+=$(prefix)$(CC) TARGET=../$@
+	make -C printk CFLAGS+="$(CFLAGS)" CC+=$(CC) TARGET=../$@
 
 # compile assembly files
 build/arch/$(arch)/asm/%.o: arch/$(arch)/asm/%.s
@@ -71,4 +76,4 @@ build/arch/$(arch)/asm/%.o: arch/$(arch)/asm/%.s
 
 build/arch/$(arch)/%.o: arch/$(arch)/%.c
 	@mkdir -p $(shell dirname $@)
-	$(prefix)$(CC) $(CFLAGS) -c $< -o $@ -Iinclude
+	$(CC) $(CFLAGS) -c $< -o $@ -Iinclude

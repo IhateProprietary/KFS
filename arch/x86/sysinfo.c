@@ -36,6 +36,7 @@ void _set_sysinfo(void *restrict multiboot_info, struct _sysinfo *sys)
 	for (offset = sizeof(struct multiboot_tag_size); offset < total_size; offset += tag_size) {
 		tag = (mb2_tag_t *)((char *)multiboot_info + offset);
 		tag_size = tag->size + (-tag->size & (MULTIBOOT_TAG_ALIGN - 1));
+		printk("type %u addr = 0x%x\n", tag->type, tag);
 		switch (tag->type) {
 		case MULTIBOOT_TAG_TYPE_ACPI_OLD:
 		case MULTIBOOT_TAG_TYPE_ACPI_NEW:
@@ -89,12 +90,10 @@ void *_find_sdt(void *root_sdp, char *sign)
 	const size_t plen = (sdt_p->hdr.len - sizeof(struct acpi_sdt_header)) / sizeof(u32);
 	size_t pcur = 0;
 
+	printk("size == %lu\n", sdt_p->hdr.len - sizeof sdt_p->hdr);
 	for (; pcur < plen; pcur++) {
 		sdt = (struct acpi_sdt_header *)sdt_p->sdt_p[pcur];
-		if (!_memcmp(sign, sdt->signature, RSDT_SIGNATURE_LENGTH)) {
-			printk("%.4s\n", sdt->signature);
-			return (sdt);
-		}
+		printk("%.4s\n", sdt->signature);
 	}
 	return (0);
 }

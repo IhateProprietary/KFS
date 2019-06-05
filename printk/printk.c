@@ -20,17 +20,17 @@
 #include "minimal_vga_tty.h"
 #include <stdarg.h>
 
-#define FMT_TYPE_ERROR    	-1
+#define FMT_TYPE_ERROR		-1
 
 #define FMT_TYPE_USIGNED	0
-#define FMT_TYPE_OCTAL    	FMT_TYPE_USIGNED
-#define FMT_TYPE_HEXA    	FMT_TYPE_USIGNED
+#define FMT_TYPE_OCTAL		FMT_TYPE_USIGNED
+#define FMT_TYPE_HEXA		FMT_TYPE_USIGNED
 
 #define FMT_TYPE_SIGNED		1
 
-#define FMT_TYPE_CHAR     	2
-#define FMT_TYPE_STRING   	3
-#define FMT_TYPE_PTR        4
+#define FMT_TYPE_CHAR		2
+#define FMT_TYPE_STRING		3
+#define FMT_TYPE_PTR		4
 
 #define FMT_UPPER_HEX "0123456789ABCDEF"
 #define FMT_LOWER_HEX "0123456789abcdef"
@@ -58,6 +58,8 @@
 #define FMT_TYPE_SSHORT (FMT_FLAG_SHORT | FMT_TYPE_SIGNED)
 #define FMT_TYPE_SXSHORT (FMT_FLAG_XSHORT | FMT_TYPE_SIGNED)
 
+#define PTR_FLAG_DUMP 0x1
+
 #define zero_flag(s) ((s) & FMT_FLAG_ZERO)
 #define space_flag(s) ((s) & FMT_FLAG_SPACE)
 #define minus_flag(s) ((s) & FMT_FLAG_MINUS)
@@ -82,6 +84,8 @@ struct fmt_spec
 	int type;
 	int base;
 
+	int __ptrflag;
+	int __dumpsize;
 	u32 val;
 };
 
@@ -120,6 +124,7 @@ static int _fmt_decode(const char *fmt, struct fmt_spec *opt)
 	opt->type = 0;
 	opt->prec = 0;
 	opt->width = 0;
+	opt->__ptrflag = 0;
 
 	for (;;) {
 		switch (*++fmt) {
@@ -185,7 +190,6 @@ type:
 	case 'H': opt->type |= FMT_FLAG_XSHORT;   goto getval;
 	}
 fmt_ptr:
-	// todo
 
 getval:
 	switch (opt->type) {
@@ -220,7 +224,7 @@ end:
 
 static void _put_flush()
 {
-	__vga_write(printk_buf, vga_default_color, used);
+	vga_write(printk_buf, used);
 	used = 0;
 }
 
@@ -233,11 +237,8 @@ static int _put_repeat(int c, size_t times)
 		if (times >= PRINTK_BUFSIZE)
 			_memset(printk_buf, c, PRINTK_BUFSIZE);
 		for (; remainder > PRINTK_BUFSIZE;
-		     remainder -= PRINTK_BUFSIZE) {
-			__vga_write(printk_buf,
-				    vga_default_color,
-				    PRINTK_BUFSIZE);
-		}
+		     remainder -= PRINTK_BUFSIZE) 
+			vga_write(printk_buf, PRINTK_BUFSIZE);
 	}
 	_memset(printk_buf + used, c, remainder);
 	used += remainder;
@@ -252,11 +253,8 @@ static int _put_buffer(const void *s, size_t size)
 	if (size + used > PRINTK_BUFSIZE) {
 		_put_flush();
 		for (; remainder > PRINTK_BUFSIZE;
-		     remainder -= PRINTK_BUFSIZE, offset += PRINTK_BUFSIZE) {
-			__vga_write(s + offset,
-				    vga_default_color,
-				    PRINTK_BUFSIZE);
-		}
+		     remainder -= PRINTK_BUFSIZE, offset += PRINTK_BUFSIZE)
+			vga_write(s + offset, PRINTK_BUFSIZE);
 	}
 	_memcpy(printk_buf + used, s + offset, remainder);
 	used += size;
@@ -382,7 +380,7 @@ static int _print_string(struct fmt_spec *opt)
 
 static int _print_ptr(struct fmt_spec *opt)
 {
-	//todo
+// todo
 	return 0;
 }
 

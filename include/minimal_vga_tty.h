@@ -19,8 +19,10 @@
 # define __MINIMAL_VGA_TTY_H__
 # include "xstdint.h"
 
-# define vga_write(mem, color, size) __vga_write(mem, color, size)
+# define vga_write(mem, size) __vga_write(mem, size)
 # define vga_color(bg, fg) (((bg) << 4) | (fg))
+# define vga_setfg(x, c) vga_color(x & 0xf0, c)
+# define vga_setbg(x, c) vga_color(c, x & 0xf)
 # define vga_default_color vga_color(VGA_COLOR_BLACK, VGA_COLOR_LIGHT_GREY)
 
 enum __vga_color
@@ -43,6 +45,6 @@ enum __vga_color
 	VGA_COLOR_WHITE = 15,
 };
 
-extern ssize_t __vga_write(const void *, u8, size_t);
+extern ssize_t __vga_write(const void *, size_t);
 
 #endif /* __MINIMAL_VGA_TTY_H__ */

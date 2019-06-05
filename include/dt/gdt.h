@@ -108,7 +108,7 @@ struct gdt_granular_bits
 		a:1,
 		l:1,
 		d:1,
-		g:1,
+		g:1;
 } __attribute__((packed));
 
 typedef union gdt_granular_u

@@ -120,7 +120,6 @@ static int _fmt_decode(const char *fmt, struct fmt_spec *opt)
 	opt->type = 0;
 	opt->prec = 0;
 	opt->width = 0;
-	opt->__ptr_flag = 0;
 
 	for (;;) {
 		switch (*++fmt) {

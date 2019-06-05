@@ -19,75 +19,75 @@
 
 char	*_strchr(const char *str, int c)
 {
-		register OP		mask;
-		OP				*long_ptr;
-		OP				val;
-		u8				*cp;
+	register OP	mask;
+	OP		*long_ptr;
+	OP		val;
+	u8		*cp;
 
-		cp = (u8 *)str;
-		while ((sizeof(OP) - 1) & (OP)cp)
-		{
-				if (*cp == (u8)c)
-						return ((char *)cp);
-				else if (*cp == 0)
-						return (0);
-				++cp;
-		}
-		mask = c & 0xff;
-		mask = (mask << 8) | mask;
-		mask = (mask << 16) | mask;
+	cp = (u8 *)str;
+	while ((sizeof(OP) - 1) & (OP)cp)
+	{
+		if (*cp == (u8)c)
+			return ((char *)cp);
+		else if (*cp == 0)
+			return (0);
+		++cp;
+	}
+	mask = c & 0xff;
+	mask = (mask << 8) | mask;
+	mask = (mask << 16) | mask;
 #if __x86_64__
-		mask = ((mask << 16) << 16) | mask;
+	mask = ((mask << 16) << 16) | mask;
 #endif
-		long_ptr = (OP *)cp;
-		for (;;)
-		{
-				val = *long_ptr;
-				if (((val - LBITS) & HBITS) ||
-					(((val ^ mask) - LBITS) & HBITS)) {
-						cp = (u8 *)long_ptr;
-						if (*cp == (u8)c)
-								return ((char *)cp);
-						else if (*cp++ == 0)
-								return (0);
+	long_ptr = (OP *)cp;
+	for (;;)
+	{
+		val = *long_ptr;
+		if (((val - LBITS) & HBITS) ||
+		    (((val ^ mask) - LBITS) & HBITS)) {
+			cp = (u8 *)long_ptr;
+			if (*cp == (u8)c)
+				return ((char *)cp);
+			else if (*cp++ == 0)
+				return (0);
 
-						else if (*cp == (u8)c)
-								return ((char *)cp);
-						else if (*cp++ == 0)
-								return (0);
+			else if (*cp == (u8)c)
+				return ((char *)cp);
+			else if (*cp++ == 0)
+				return (0);
 
-						else if (*cp == (u8)c)
-								return ((char *)cp);
-						else if (*cp++ == 0)
-								return (0);
+			else if (*cp == (u8)c)
+				return ((char *)cp);
+			else if (*cp++ == 0)
+				return (0);
 
-						else if (*cp == (u8)c)
-								return ((char *)cp);
-						else if (*cp++ == 0)
-								return (0);
+			else if (*cp == (u8)c)
+				return ((char *)cp);
+			else if (*cp++ == 0)
+				return (0);
 #if __x86_64__
-						else if (*cp == (u8)c)
-								return ((char *)cp);
-						else if (*cp++ == 0)
-								return (0);
+			else if (*cp == (u8)c)
+				return ((char *)cp);
+			else if (*cp++ == 0)
+				return (0);
 
-						else if (*cp == (u8)c)
-								return ((char *)cp);
-						else if (*cp++ == 0)
-								return (0);
+			else if (*cp == (u8)c)
+				return ((char *)cp);
+			else if (*cp++ == 0)
+				return (0);
 
-						else if (*cp == (u8)c)
-								return ((char *)cp);
-						else if (*cp++ == 0)
-								return (0);
+			else if (*cp == (u8)c)
+				return ((char *)cp);
+			else if (*cp++ == 0)
+				return (0);
 
-						else if (*cp == (u8)c)
-								return ((char *)cp);
-						else if (*cp++ == 0)
-								return (0);
+			else if (*cp == (u8)c)
+				return ((char *)cp);
+			else if (*cp++ == 0)
+				return (0);
 #endif
 
-				}
-				++long_ptr;
 		}
+		++long_ptr;
+	}
 }

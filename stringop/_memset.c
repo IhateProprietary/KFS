@@ -19,56 +19,56 @@
 
 static inline void	_memset64(OP dstp, int c, size_t m8)
 {
-		register size_t		xlen;
-		register OP			mask_set;
+	register size_t		xlen;
+	register OP			mask_set;
 
-		mask_set = c << 8 | c;
-		mask_set = (mask_set << 16) | mask_set;
+	mask_set = c << 8 | c;
+	mask_set = (mask_set << 16) | mask_set;
 #if __x86_64__
-		mask_set = ((mask_set << 16) << 16) | mask_set;
+	mask_set = ((mask_set << 16) << 16) | mask_set;
 #endif
-		xlen = m8 >> OP_SHIFT;
-		while (xlen--) {
-				((OP *)dstp)[0] = mask_set;
-				((OP *)dstp)[1] = mask_set;
-				((OP *)dstp)[2] = mask_set;
-				((OP *)dstp)[3] = mask_set;
-				((OP *)dstp)[4] = mask_set;
-				((OP *)dstp)[5] = mask_set;
-				((OP *)dstp)[6] = mask_set;
-				((OP *)dstp)[7] = mask_set;
-				dstp += (OP_SIZE << 3);
-		}
-		m8 &= 7;
-		while (m8--) {
-				((OP *)dstp)[0] = mask_set;
-				dstp += OP_SIZE;
-		}
+	xlen = m8 >> OP_SHIFT;
+	while (xlen--) {
+		((OP *)dstp)[0] = mask_set;
+		((OP *)dstp)[1] = mask_set;
+		((OP *)dstp)[2] = mask_set;
+		((OP *)dstp)[3] = mask_set;
+		((OP *)dstp)[4] = mask_set;
+		((OP *)dstp)[5] = mask_set;
+		((OP *)dstp)[6] = mask_set;
+		((OP *)dstp)[7] = mask_set;
+		dstp += (OP_SIZE << 3);
+	}
+	m8 &= 7;
+	while (m8--) {
+		((OP *)dstp)[0] = mask_set;
+		dstp += OP_SIZE;
+	}
 }
 
 static inline void	_memset8(OP dstp, int c, size_t len)
 {
-		while (len--)
-				((u8 *)dstp++)[0] = c;
+	while (len--)
+		((u8 *)dstp++)[0] = c;
 }
 
 void				*_memset(void *mem, int c, size_t mlen)
 {
-		OP		dstp;
-		size_t	xlen;
+	OP		dstp;
+	size_t	xlen;
 
-		dstp = (OP)mem;
-		c &= 0xff;
-		if (mlen >= (OP_SIZE << 1)) {
-				xlen = -dstp & OP_MASK;
-				_memset8(dstp, c, xlen);
-				mlen -= xlen;
-				dstp += xlen;
-				xlen = mlen >> OP_SHIFT;
-				_memset64(dstp, c, xlen);
-				dstp += (xlen << OP_SHIFT);
-				mlen &= OP_MASK;
-		}
-		_memset8(dstp, c, mlen);
-		return (mem);
+	dstp = (OP)mem;
+	c &= 0xff;
+	if (mlen >= (OP_SIZE << 1)) {
+		xlen = -dstp & OP_MASK;
+		_memset8(dstp, c, xlen);
+		mlen -= xlen;
+		dstp += xlen;
+		xlen = mlen >> OP_SHIFT;
+		_memset64(dstp, c, xlen);
+		dstp += (xlen << OP_SHIFT);
+		mlen &= OP_MASK;
+	}
+	_memset8(dstp, c, mlen);
+	return (mem);
 }

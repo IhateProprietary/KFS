@@ -19,57 +19,57 @@
 
 static inline void *_memchr8(OP dstp, u8 c, size_t n)
 {
-		register u8	dstc;
+	register u8	dstc;
 
-		while (n--) {
-				dstc = ((u8 *)dstp)[0];
-				if (dstc == c)
-						return ((void *)dstp);
-				++dstp;
-		}
-		return (0);
+	while (n--) {
+		dstc = ((u8 *)dstp)[0];
+		if (dstc == c)
+			return ((void *)dstp);
+		++dstp;
+	}
+	return (0);
 }
 
 static void *_memchr64(OP dstp, int c, size_t n)
 {
-		register size_t	xlen;
-		register OP		mask_set;
-		register OP		lo_magic;
-		register OP		hi_magic;
-		OP				dstpp;
+	register size_t	xlen;
+	register OP		mask_set;
+	register OP		lo_magic;
+	register OP		hi_magic;
+	OP				dstpp;
 
-		lo_magic = LBITS;
-		hi_magic = HBITS;
-		mask_set = c << 8 | c;
-		mask_set = (mask_set << 16) | mask_set;
+	lo_magic = LBITS;
+	hi_magic = HBITS;
+	mask_set = c << 8 | c;
+	mask_set = (mask_set << 16) | mask_set;
 #if __x86_64__
-		mask_set = ((mask_set << 16) << 16) | mask_set;
+	mask_set = ((mask_set << 16) << 16) | mask_set;
 #endif
-		xlen = n >> OP_SHIFT;
-		while (xlen--) {
-				if ((((((OP *)dstp)[0] ^ mask_set) - lo_magic) & hi_magic))
-						if ((dstpp = (OP)_memchr8(dstp, c, OP_SIZE)))
-								return ((void *)dstpp);
-				dstp += OP_SIZE;
-		}
-		return (_memchr8(dstp, c, n & OP_MASK));
+	xlen = n >> OP_SHIFT;
+	while (xlen--) {
+		if ((((((OP *)dstp)[0] ^ mask_set) - lo_magic) & hi_magic))
+			if ((dstpp = (OP)_memchr8(dstp, c, OP_SIZE)))
+				return ((void *)dstpp);
+		dstp += OP_SIZE;
+	}
+	return (_memchr8(dstp, c, n & OP_MASK));
 }
 
 void *_memchr(const void *mem, int c, size_t n)
 {
-		OP		dstp;
-		size_t	xlen;
-		void	*ret;
+	OP		dstp;
+	size_t	xlen;
+	void	*ret;
 
-		dstp = (OP)mem;
-		c &= 0xff;
-		if (n >= (OP_SIZE * 2)) {
-				xlen = -dstp & OP_MASK;
-				if ((ret = _memchr8(dstp, c, xlen)))
-						return (ret);
-				dstp += xlen;
-				n -= xlen;
-				return (_memchr64(dstp, c, n));
-		}
-		return (_memchr8(dstp, c, n));
+	dstp = (OP)mem;
+	c &= 0xff;
+	if (n >= (OP_SIZE * 2)) {
+		xlen = -dstp & OP_MASK;
+		if ((ret = _memchr8(dstp, c, xlen)))
+			return (ret);
+		dstp += xlen;
+		n -= xlen;
+		return (_memchr64(dstp, c, n));
+	}
+	return (_memchr8(dstp, c, n));
 }

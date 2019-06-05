@@ -19,51 +19,51 @@
 
 size_t		_strnlen(const char *str, size_t n)
 {
-		OP			*long_ptr;
-		OP			val;
-		const char	*cp;
-		const char	*end = str + n;
+	OP			*long_ptr;
+	OP			val;
+	const char	*cp;
+	const char	*end = str + n;
 
-		if (n == 0)
-				return 0;
+	if (n == 0)
+		return 0;
 
-		if (__builtin_expect(end < str, 0))
-				end = (char *)~0UL;
+	if (__builtin_expect(end < str, 0))
+		end = (char *)~0UL;
 
-		cp = (char *)str;
+	cp = (char *)str;
 
-		while ((OP)cp & OP_MASK) {
-				if (*cp == 0)
-						goto end;
-				++cp;
-		}
-		long_ptr = (OP *)cp;
-		val = *long_ptr;
-		for (;(char *)long_ptr < end;
-			 val = *++long_ptr, cp = (char *)long_ptr) {
-				if ((val - LBITS) & HBITS) {
-						if (*cp == 0)
-								break ;
-						if (*++cp == 0)
-								break ;
-						if (*++cp == 0)
-								break ;
-						if (*++cp == 0)
-								break ;
+	while ((OP)cp & OP_MASK) {
+		if (*cp == 0)
+			goto end;
+		++cp;
+	}
+	long_ptr = (OP *)cp;
+	val = *long_ptr;
+	for (;(char *)long_ptr < end;
+	     val = *++long_ptr, cp = (char *)long_ptr) {
+		if ((val - LBITS) & HBITS) {
+			if (*cp == 0)
+				break ;
+			if (*++cp == 0)
+				break ;
+			if (*++cp == 0)
+				break ;
+			if (*++cp == 0)
+				break ;
 #if __x86_64__
-						if (*++cp == 0)
-								break ;
-						if (*++cp == 0)
-								break ;
-						if (*++cp == 0)
-								break ;
-						if (*++cp == 0)
-								break ;
+			if (*++cp == 0)
+				break ;
+			if (*++cp == 0)
+				break ;
+			if (*++cp == 0)
+				break ;
+			if (*++cp == 0)
+				break ;
 #endif
-				}
 		}
+	}
 end:
-		if (cp > end)
-				cp = end;
-		return (cp - str);
+	if (cp > end)
+		cp = end;
+	return (cp - str);
 }

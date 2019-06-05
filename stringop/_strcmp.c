@@ -19,21 +19,21 @@
 
 int		_strcmp(const char *s1, const char *s2)
 {
-		const unsigned char *ss1;
-		const unsigned char *ss2;
-		unsigned char		c1;
-		unsigned char		c2;
+	const unsigned char *ss1;
+	const unsigned char *ss2;
+	unsigned char c1;
+	unsigned char c2;
 
-		ss1 = (const unsigned char *)s1;
-		ss2 = (const unsigned char *)s2;
-		c1 = *ss1;
-		c2 = *ss2;
-		while (c1 == c2)
-		{
-				if (c1 == 0)
-						return (c1 - c2);
-				c1 = *++ss1;
-				c2 = *++ss2;
-		}
-		return (c1 - c2);
+	ss1 = (const unsigned char *)s1;
+	ss2 = (const unsigned char *)s2;
+	c1 = *ss1;
+	c2 = *ss2;
+	while (c1 == c2)
+	{
+		if (c1 == 0)
+			return (c1 - c2);
+		c1 = *++ss1;
+		c2 = *++ss2;
+	}
+	return (c1 - c2);
 }

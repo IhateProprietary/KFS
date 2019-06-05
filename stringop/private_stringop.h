@@ -57,16 +57,16 @@
 # define OP_MASK (OP_SIZE - 1)
 
 
-void			*_memset(void *, int, size_t);
-void			*_memcpy(void *, const void *, size_t);
-void			*_memmove(void *, const void *, size_t);
-void			*_memchr(const void *, int, size_t);
-int				_memcmp(const void *, const void *, size_t);
+void	*_memset(void *, int, size_t);
+void	*_memcpy(void *, const void *, size_t);
+void	*_memmove(void *, const void *, size_t);
+void	*_memchr(const void *, int, size_t);
+int	_memcmp(const void *, const void *, size_t);
 
-size_t			_strlen(const char *);
-size_t			_strnlen(const char *, size_t);
-char			*_strcpy(char *, const char *);
-char			*_strchr(const char *, int);
-int				_strcmp(const char *, const char *);
+size_t	_strlen(const char *);
+size_t	_strnlen(const char *, size_t);
+char	*_strcpy(char *, const char *);
+char	*_strchr(const char *, int);
+int	_strcmp(const char *, const char *);
 
 #endif /* __PRIVATE_STRINGOP_H__ */

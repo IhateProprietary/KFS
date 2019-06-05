@@ -19,40 +19,40 @@
 
 size_t		_strlen(const char *str)
 {
-		OP		*long_ptr;
-		OP		val;
-		char	*cp;
+	OP		*long_ptr;
+	OP		val;
+	char	*cp;
 
-		cp = (char *)str;
-		while ((OP)cp & OP_MASK) {
-				if (*cp == 0)
-						return (cp - str);
-				++cp;
-		}
-		long_ptr = (OP *)cp;
-		for (;;) {
-				val = *long_ptr;
-				if ((val - LBITS) & HBITS) {
-						cp = (char *)long_ptr;
-						if (*cp == 0)
-								return (cp - str);
-						if (*++cp == 0)
-								return (cp - str);
-						if (*++cp == 0)
-								return (cp - str);
-						if (*++cp == 0)
-								return (cp - str);
+	cp = (char *)str;
+	while ((OP)cp & OP_MASK) {
+		if (*cp == 0)
+			return (cp - str);
+		++cp;
+	}
+	long_ptr = (OP *)cp;
+	for (;;) {
+		val = *long_ptr;
+		if ((val - LBITS) & HBITS) {
+			cp = (char *)long_ptr;
+			if (*cp == 0)
+				return (cp - str);
+			if (*++cp == 0)
+				return (cp - str);
+			if (*++cp == 0)
+				return (cp - str);
+			if (*++cp == 0)
+				return (cp - str);
 #if __x86_64__
-						if (*++cp == 0)
-								return (cp - str);
-						if (*++cp == 0)
-								return (cp - str);
-						if (*++cp == 0)
-								return (cp - str);
-						if (*++cp == 0)
-								return (cp - str);
+			if (*++cp == 0)
+				return (cp - str);
+			if (*++cp == 0)
+				return (cp - str);
+			if (*++cp == 0)
+				return (cp - str);
+			if (*++cp == 0)
+				return (cp - str);
 #endif
-				}
-				++long_ptr;
 		}
+		++long_ptr;
+	}
 }

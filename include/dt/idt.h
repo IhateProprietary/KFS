@@ -67,49 +67,49 @@
 # define IDT_PVL_KERNEL 0x0
 # define IDT_PVL_USER 0x3
 
-# define GATE(base, seg, ring, gate)									\
-		{																\
-				.base_low = ((base) & 0xffff),							\
-				.base_high = ((base) >> 16) & 0xffff,					\
-				.selector = (seg),										\
-				.bits.zero = 0,											\
-				.bits.ist = 0,											\
-				.bits.type = (gate),									\
-				.bits.dpl = (ring),										\
-				.bits.p = 1,											\
-		}
-# define INTGATE(base, seg, ring)				\
-		GATE(base, seg, ring, IDT_GATE_INT)
-# define TASKGATE(base, seg, ring)				\
-		GATE(base, seg, ring, IDT_GATE_TASK)
-# define TRAPGATE(base, seg, ring)				\
-		GATE(base, seg, ring, IDT_GATE_TRAP)
+# define GATE(base, seg, ring, gate)			\
+	{						\
+		.base_low = ((base) & 0xffff),		\
+		.base_high = ((base) >> 16) & 0xffff,	\
+		.selector = (seg),			\
+		.bits.zero = 0,				\
+		.bits.ist = 0,				\
+		.bits.type = (gate),			\
+		.bits.dpl = (ring),			\
+		.bits.p = 1,				\
+	}
+# define INTGATE(base, seg, ring)		\
+	GATE(base, seg, ring, IDT_GATE_INT)
+# define TASKGATE(base, seg, ring)		\
+	GATE(base, seg, ring, IDT_GATE_TASK)
+# define TRAPGATE(base, seg, ring)		\
+	GATE(base, seg, ring, IDT_GATE_TRAP)
 
 struct idt_flag_bits
 {
-		/* ist unavailable in x86 */
-		u16		ist		:3,
-				zero	:5,
-				type	:5,
-				dpl		:2,
-				p		:1;
+	/* ist unavailable in x86 */
+	u16		ist		:3,
+		zero	:5,
+		type	:5,
+		dpl		:2,
+		p		:1;
 } __attribute__((packed));
 
 struct idt_entry
 {
-		/* pointer to the function */
-		u16						base_low;
-		/* gdt selector */
-		u16						selector;
-		struct idt_flag_bits	bits;
-		/* pointer to the function */
-		u16						base_high;
+	/* pointer to the function */
+	u16						base_low;
+	/* gdt selector */
+	u16						selector;
+	struct idt_flag_bits	bits;
+	/* pointer to the function */
+	u16						base_high;
 } __attribute__((packed));
 
 struct idt
 {
-		u16 limit;
-		u32 entp;
+	u16 limit;
+	u32 entp;
 } __attribute__((packed));
 
 extern struct idt_entry idt_entries[];

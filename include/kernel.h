@@ -20,13 +20,13 @@
 
 struct _sysinfo
 {
-		u32 _acpi_rsdp;
-		u32 _frameinfo;
-		u32 _elfsection;
-		u32 _mmap;
-		u32 _meminfo;
+	u32 _acpi_rsdp;
+	u32 _frameinfo;
+	u32 _elfsection;
+	u32 _mmap;
+	u32 _meminfo;
 } __attribute__((packed));
 
-int		printk(const char *fmt, ...);
+int	printk(const char *fmt, ...);
 
 #endif /* __KERNEL_H__ */

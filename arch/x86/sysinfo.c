@@ -25,6 +25,8 @@
 
 typedef struct multiboot_tag mb2_tag_t;
 
+static int __checksum_ok(const u8 *restrict p, size_t size);
+
 void _set_sysinfo(void *restrict multiboot_info, struct _sysinfo *sys)
 {
 	u32 offset;
@@ -33,23 +35,53 @@ void _set_sysinfo(void *restrict multiboot_info, struct _sysinfo *sys)
 	const u32 total_size = ((struct multiboot_tag_size *)	\
 				multiboot_info)->total_size;
 
-	for (offset = sizeof(struct multiboot_tag_size); offset < total_size; offset += tag_size) {
+	for (offset = sizeof(struct multiboot_tag_size);
+	     offset < total_size;
+	     offset += tag_size) {
 		tag = (mb2_tag_t *)((char *)multiboot_info + offset);
 		tag_size = tag->size + (-tag->size & (MULTIBOOT_TAG_ALIGN - 1));
-		printk("type %u addr = 0x%x\n", tag->type, tag);
+
 		switch (tag->type) {
 		case MULTIBOOT_TAG_TYPE_ACPI_OLD:
 		case MULTIBOOT_TAG_TYPE_ACPI_NEW:
-			sys->_acpi_rsdp = (u32)tag; break;
+			sys->acpi_rsdp = (u32)tag;  break;
 		case MULTIBOOT_TAG_TYPE_BASIC_MEMINFO:
-			sys->_meminfo = (u32)tag; break;
+			sys->meminfo = (u32)tag;    break;
 		case MULTIBOOT_TAG_TYPE_FRAMEBUFFER:
-			sys->_frameinfo = (u32)tag; break;
+			sys->frameinfo = (u32)tag;  break;
 		case MULTIBOOT_TAG_TYPE_MMAP:
-			sys->_mmap = (u32)tag; break;
+			sys->mmap = (u32)tag;       break;
 		case MULTIBOOT_TAG_TYPE_ELF_SECTIONS:
-			sys->_elfsection = (u32)tag; break;
+			sys->elfsection = (u32)tag; break;
 		default: break;
+		}
+	}
+}
+
+void _set_apic_addr(struct acpi_sdt_apic *apic, struct _sysinfo *sys)
+{
+	const size_t size = apic->hdr.len;
+	struct acpi_sdt_apic_type *p;
+	size_t offset;
+	
+	(void)sys;
+
+	printk("%.4s apic base addr 0x%x\n", apic->hdr.signature, apic);
+	sys->lapic_addr = apic->lapic_addr;
+	for (offset = sizeof *apic;
+	     offset < size;
+	     offset += p->length) {
+		p = (struct acpi_sdt_apic_type *)((char *)apic + offset);
+		switch (p->type) {
+		case ACPI_APIC_TYPE_LOCAL:
+			printk("flag lapic 0x%x id 0x%x\n",
+			       ((struct acpi_sdt_lapic *)p)->flags,
+			       ((struct acpi_sdt_lapic *)p)->lapic_id);
+			break ;
+		case ACPI_APIC_TYPE_IO:
+			sys->ioapic_addr =
+				((struct acpi_sdt_ioapic *)p)->ioapic_addr;
+			break ;
 		}
 	}
 }
@@ -63,7 +95,7 @@ int __rsdp_ok(struct multiboot_tag_acpi *rsdp)
 	if (__builtin_expect(p > end, 0))
 		end = (u8 *)~0UL;
 
-	if (_memcmp("RSD PTR ", rsdp->rsdp, 8))
+	if (_memcmp("RSD PTR ", p, 8))
 		return 1;
 	for (; p < end; ++p)
 		sum += *p;
@@ -83,17 +115,18 @@ int __checksum_ok(const u8 *restrict p, size_t size)
 	return (sum & 0xff);
 }
 
-void *_find_sdt(void *root_sdp, char *sign)
+void *_find_sdt(void *root_sdp, const char *sign)
 {
 	const struct acpi_ptr_table *sdt_p = root_sdp;
 	struct acpi_sdt_header *sdt;
-	const size_t plen = (sdt_p->hdr.len - sizeof(struct acpi_sdt_header)) / sizeof(u32);
+	const size_t plen = (sdt_p->hdr.len - sizeof(struct acpi_sdt_header))
+		/ sizeof(u32);
 	size_t pcur = 0;
 
-	printk("size == %lu\n", sdt_p->hdr.len - sizeof sdt_p->hdr);
 	for (; pcur < plen; pcur++) {
 		sdt = (struct acpi_sdt_header *)sdt_p->sdt_p[pcur];
-		printk("%.4s\n", sdt->signature);
+		if (!_memcmp(sign, sdt->signature, 4))
+			return (void *)sdt;
 	}
 	return (0);
 }

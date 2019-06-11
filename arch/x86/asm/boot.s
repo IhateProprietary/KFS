@@ -1,7 +1,5 @@
 %define MAGIC 0xE85250D6
 
-%define SCREEN 0xB8000
-
 section .multiboot_header
 __multi_header_start:
 ;; multiboot header 
@@ -41,6 +39,8 @@ _meminfo: dd 0
 ;; ... more to come maybe
 _lapic_addr: dd 0
 _ioapic_addr: dd 0
+_facp_addr: dd 0
+_dsdt_addr: dd 0
 
 section .text
 global _start
@@ -55,6 +55,8 @@ extern idt_init
 extern idt_flush
 
 extern _set_sysinfo
+extern _set_apic_addr
+
 extern __rsdp_ok
 extern _find_sdt
 ;; the "main"
@@ -81,6 +83,11 @@ _start:
 	mov eax, [edx+24]		;offset to sdt_p
 	push eax
 	call _find_sdt
+	mov esp, ebp
+
+	push _sysinfo
+	push eax
+	call _set_apic_addr
 	mov esp, ebp
 
 ;; initialize GDT
@@ -117,9 +124,8 @@ _start:
 	hlt
 
 section .rodata
-_fail: db "ACPI fatal error", 0xa, 0
+_fail: db "Some error happened", 0xa, 0
 _fmt: db "%s  0x%x", 0xa, 0
 _gdt_ok: db "GDT ", 0xe, "f4OK", 0xe, "f7", 0
 _idt_ok: db "IDT OK", 0
-_fmt2: db "eax 0x%x ebx 0x%x eflag 0x%x", 0xa, 0
 _APIC_s: db "APIC"

@@ -20,12 +20,14 @@
 
 struct _sysinfo
 {
-	u32 _acpi_rsdp;
-	u32 _frameinfo;
-	u32 _elfsection;
-	u32 _mmap;
-	u32 _meminfo;
-} __attribute__((packed));
+	u32 acpi_rsdp;
+	u32 frameinfo;
+	u32 elfsection;
+	u32 mmap;
+	u32 meminfo;
+	u32 lapic_addr;
+	u32 ioapic_addr;
+};
 
 int	printk(const char *fmt, ...);
 

@@ -41,9 +41,15 @@ ACPI 1.0 specification
 (ACPI ver == 1.0(b))
 http://www.acpi.info/DOWNLOADS/ACPIspec10b.pdf
 
+PIC dual 8259 debunked (IO port master = 0x20 slave = 0xA0 ????)
+https://pdos.csail.mit.edu/6.828/2005/readings/hardware/8259A.pdf
+http://www.eeeguide.com/programming-8259/
+
+IO port list, basic works, other things untested.
+http://bochs.sourceforge.net/techspec/PORTS.LST
+
 PIC / APIC
 https://www.rigacci.org/wiki/doku.php/doc/appunti/linux/sa/irq_acpi_apic
-
 TLDR;
 PIC is legacy
 APIC is the "upgraded version" to resolve multiprocessor PIC problem

@@ -15,22 +15,15 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __KERNEL_H__
-# define __KERNEL_H__
+#ifndef __IO_H__
+# define __IO_H__ 1
 
-# include "xstdint.h"
+# define inb(port, data)			\
+	__asm__ __volatile__("inb %w1, %b0"	\
+			     : "=a" (data)	\
+			     : "d" (port))
+# define outb(port, data)					\
+	__asm__ __volatile__("outb %b0, %w1"			\
+			     :: "a" (data), "d" (port))
 
-struct _sysinfo
-{
-	u32 acpi_rsdp;
-	u32 frameinfo;
-	u32 elfsection;
-	u32 mmap;
-	u32 meminfo;
-	u32 lapic_addr;
-	u32 ioapic_addr;
-};
-
-int	printk(const char *fmt, ...);
-
-#endif /* __KERNEL_H__ */
+#endif /*__IO_H__*/

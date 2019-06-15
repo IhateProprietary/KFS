@@ -38,11 +38,14 @@ extern void _isr17(void);
 extern void _isr18(void);
 extern void _isr19(void);
 extern void _isr20(void);
-extern void _undefined(void);
 
-struct idt_entry idt_entries[256] = {
-		
-};
+__attribute__((naked, noreturn))
+static void _ignored(void)
+{
+	asm volatile("iret");
+}
+
+struct idt_entry idt_entries[IDT_ISR_GATE_MAX];
 
 struct idt _idtp = {
 	.limit = sizeof(idt_entries) - 1,
@@ -78,15 +81,20 @@ void idt_init(void)
 
 	for (n = 0; n < IDT_ISR_USR_GATE; n++)
 	{
-		base_ptr = (u32)(n[_isr] ? n[_isr] : _undefined);
-		idt_entries[n] = (struct idt_entry)INTGATE(base_ptr, IDT_KERNEL_CS, IDT_PVL_KERNEL);
+		base_ptr = (u32)(n[_isr] ? n[_isr] : _ignored);
+		idt_entries[n] = (struct idt_entry)INTGATE(
+			base_ptr,
+			IDT_KERNEL_CS,
+			IDT_PVL_KERNEL
+		);
 	}
+
 }
 
 /* stack in reverse order? */
 typedef struct
 {
-	u32		ss, gs ,fs, es, ds,
+	u32	ss, gs ,fs, es, ds,
 		edi, esi, ebp, esp, ebx, edx, ecx, eax,
 		int_no, err_code,
 		eip, cs, eflags,

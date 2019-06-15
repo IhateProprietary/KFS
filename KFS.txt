@@ -1,16 +1,16 @@
-multiboot manual
-https://www.gnu.org/software/grub/manual/multiboot2/multiboot.html
-pdf format
-https://www.gnu.org/software/grub/manual/multiboot2/multiboot.pdf
-
 TUTO
 https://os.phil-opp.com/multiboot-kernel/
 
-not multiboot compliant
-https://github.com/cfenollosa/os-tutorial
-
 linkerscript ld
 https://sourceware.org/binutils/docs/ld/Scripts.html
+
+some other UNIX kernel tutorial
+http://www.jamesmolloy.co.uk/tutorial_html/
+
+IO port list, basic works, other things untested.
+http://bochs.sourceforge.net/techspec/PORTS.LST
+----------------------------------------------------------
+### Descriptor Table
 
 Global Descriptor Table
 http://pages.cs.wisc.edu/%7Eremzi/OSTEP/vm-segmentation.pdf
@@ -21,6 +21,37 @@ https://en.wikibooks.org/wiki/X86_Assembly/Advanced_Interrupts
 github
 https://github.com/torvalds/linux/blob/master/arch/x86/kernel/idt.c
 
+------------------------------------------------------------
+### PIC/APIC, different things
+
+APIC ACPI tables
+http://ethv.net/workshops/osdev/notes/
+
+IO APIC datasheet
+TLDR; just read register description
+https://web.archive.org/web/20161130153145/http://download.intel.com/design/chipsets/datashts/29056601.pdf
+
+MSR base addr == 0x1b
+using the instruction rdmsr wrmsr (ecx == offset, load = edx:eax)
+
+PIC dual 8259 debunked (IO port master = 0x20 slave = 0xA0 ????)
+https://pdos.csail.mit.edu/6.828/2005/readings/hardware/8259A.pdf
+http://www.eeeguide.com/programming-8259/
+
+to get the actual mapping,
+search through the ACPI DSDT (a real pain in the arse)
+
+TLDR;
+PIC is legacy
+APIC is the "upgraded version" to resolve multiprocessor PIC problem
+------------------------------------------------------------------
+
+multiboot manual
+https://www.gnu.org/software/grub/manual/multiboot2/multiboot.pdf
+
+-----------------------------------------------------------
+
+actual manuals, no IO apic desbribed, no PIC described
 IA 32 e
 https://www.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-system-programming-manual-325384.pdf
 
@@ -29,9 +60,8 @@ Volume 2 System Programming
 https://www.amd.com/system/files/TechDocs/24593.pdf
 Volume 3 General-Purpose and System Instructions
 https://www.amd.com/system/files/TechDocs/24594.pdf
-
-some other UNIX kernel tutorial
-http://www.jamesmolloy.co.uk/tutorial_html/
+--------------------------------------------------------------------
+### ACPI, ugh
 
 ACPI 5.0 specification
 (ACPI ver >= 2.0)
@@ -40,19 +70,3 @@ http://www.acpi.info/DOWNLOADS/ACPIspec50.pdf
 ACPI 1.0 specification
 (ACPI ver == 1.0(b))
 http://www.acpi.info/DOWNLOADS/ACPIspec10b.pdf
-
-PIC dual 8259 debunked (IO port master = 0x20 slave = 0xA0 ????)
-https://pdos.csail.mit.edu/6.828/2005/readings/hardware/8259A.pdf
-http://www.eeeguide.com/programming-8259/
-
-IO port list, basic works, other things untested.
-http://bochs.sourceforge.net/techspec/PORTS.LST
-
-PIC / APIC
-https://www.rigacci.org/wiki/doku.php/doc/appunti/linux/sa/irq_acpi_apic
-TLDR;
-PIC is legacy
-APIC is the "upgraded version" to resolve multiprocessor PIC problem
-
-APIC ACPI tables
-http://ethv.net/workshops/osdev/notes/

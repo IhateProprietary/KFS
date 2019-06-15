@@ -25,8 +25,6 @@
 
 typedef struct multiboot_tag mb2_tag_t;
 
-static int __checksum_ok(const u8 *restrict p, size_t size);
-
 void _set_sysinfo(void *restrict multiboot_info, struct _sysinfo *sys)
 {
 	u32 offset;
@@ -63,7 +61,7 @@ void _set_apic_addr(struct acpi_sdt_apic *apic, struct _sysinfo *sys)
 	const size_t size = apic->hdr.len;
 	struct acpi_sdt_apic_type *p;
 	size_t offset;
-	
+
 	(void)sys;
 
 	printk("%.4s apic base addr 0x%x\n", apic->hdr.signature, apic);
@@ -81,6 +79,7 @@ void _set_apic_addr(struct acpi_sdt_apic *apic, struct _sysinfo *sys)
 		case ACPI_APIC_TYPE_IO:
 			sys->ioapic_addr =
 				((struct acpi_sdt_ioapic *)p)->ioapic_addr;
+			printk("IOAPIC addr 0x%x\n", sys->ioapic_addr);
 			break ;
 		}
 	}

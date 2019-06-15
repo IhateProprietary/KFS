@@ -28,6 +28,7 @@ _stack_bottom:
 
 section .data
 global _sysinfo
+global _cpuinfo
 
 _sysinfo:
 _acpi_rsdp: dd 0
@@ -59,6 +60,11 @@ extern _set_apic_addr
 
 extern __rsdp_ok
 extern _find_sdt
+
+extern pic_enable
+extern pic_disable
+
+extern test_apic
 ;; the "main"
 _start:
 ;; The OS image must create its own stack as soon as it needs one.
@@ -66,7 +72,8 @@ _start:
 	mov esp, _stack_bottom
 	mov ebp, esp
 
-;; Parsing multiboot 2 BIOS info
+.multiboot2:
+;; Parsing multiboot2 BIOS info
 	push _sysinfo
 	push ebx
 	call _set_sysinfo
@@ -84,12 +91,16 @@ _start:
 	push eax
 	call _find_sdt
 	mov esp, ebp
+;; test if ACPI has APIC table or not
+	test eax, eax
+	jz .gdt
 
 	push _sysinfo
 	push eax
 	call _set_apic_addr
 	mov esp, ebp
 
+.gdt:
 ;; initialize GDT
 	mov eax, _gdtp
 	push eax
@@ -103,7 +114,6 @@ _start:
 
 ;; initialize IDT
 	call idt_init
-
 	push _idtp
 	call idt_flush
 	mov esp, ebp
@@ -114,7 +124,9 @@ _start:
 	call printk
 	mov esp, ebp
 
-;; testing exception ISR
+	call test_apic
+
+;; testing exception IDT
 	int 0
 	jmp .ok
 .fail:
@@ -124,6 +136,7 @@ _start:
 	hlt
 
 section .rodata
+_fmt2: db "cpu vendor %.12s", 0xa, 0
 _fail: db "Some error happened", 0xa, 0
 _fmt: db "%s  0x%x", 0xa, 0
 _gdt_ok: db "GDT ", 0xe, "f4OK", 0xe, "f7", 0

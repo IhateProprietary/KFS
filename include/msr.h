@@ -15,22 +15,17 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __KERNEL_H__
-# define __KERNEL_H__
+#ifndef __MSR_H__
+# define __MSR_H__ 1
 
-# include "xstdint.h"
+# define rdmsr(reg, high, low)				\
+	__asm__ __volatile__("rdmsr"			\
+			     :"=a"(low), "=d"(high)	\
+			     :"c"(reg))
 
-struct _sysinfo
-{
-	u32 acpi_rsdp;
-	u32 frameinfo;
-	u32 elfsection;
-	u32 mmap;
-	u32 meminfo;
-	u32 lapic_addr;
-	u32 ioapic_addr;
-};
+# define wrmsr(reg, high, low)					\
+	__asm__ volatile("wrmsr"				\
+			 ::"a"(low), "d"(high), "c"(reg))
 
-int	printk(const char *fmt, ...);
 
-#endif /* __KERNEL_H__ */
+#endif /* __MSR_H__ */

@@ -15,22 +15,45 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __KERNEL_H__
-# define __KERNEL_H__
+#include "io.h"
+#include "xstdint.h"
 
-# include "xstdint.h"
+/*
+ * 0x20 == PIC master cmd port
+ * 0x21 == PIC master data port
+ * 0xa0 == PIC slave cmd port
+ * 0xa1 == PIC slave data port
+ */
 
-struct _sysinfo
+/*
+ * This functions disable PIC8259 by masking them
+ */
+void pic_disable(void)
 {
-	u32 acpi_rsdp;
-	u32 frameinfo;
-	u32 elfsection;
-	u32 mmap;
-	u32 meminfo;
-	u32 lapic_addr;
-	u32 ioapic_addr;
-};
+	outb(0x20, 0x11);
+	outb(0xa0, 0x11);
 
-int	printk(const char *fmt, ...);
+	outb(0x21, 0xe0);
+	outb(0xa1, 0xe8);
 
-#endif /* __KERNEL_H__ */
+	outb(0x21, 4);
+	outb(0xa1, 2);
+
+	outb(0x21, 0xff);
+	outb(0xa1, 0xff);
+}
+
+void pic_enable(const u8 master_mask, const u8 slave_mask)
+{
+	outb(0x20, 0x11);
+	outb(0xa0, 0x11);
+
+	outb(0x21, 0xe0);
+	outb(0xa1, 0xe8);
+
+	outb(0x21, 4);
+	outb(0xa1, 2);
+
+	outb(0x21, master_mask);
+	outb(0xa1, slave_mask);
+}

@@ -32,14 +32,14 @@ typedef __INT_LEAST64_TYPE__ s64;
 typedef u64 size_t;
 typedef s64 ssize_t;
 #  define __SIZEOF_SIZE_T__ 8
-#  define __SIZE_T_WIDTH__ __UINT_LEAST64_WIDTH__
-#  define __SIZE_T_MAX__ __UINT_LEAST64_MAX__
+#  define __SIZE_T_WIDTH__ 64
+#  define __SIZE_T_MAX__ 0xffffffffffffffffULL
 # else
 typedef u32 size_t;
 typedef s32 ssize_t;
 #  define __SIZEOF_SIZE_T__ 4
-#  define __SIZE_T_WIDTH__ __UINT_LEAST32_WIDTH__
-#  define __SIZE_T_MAX__ __UINT_LEAST32_MAX__
+#  define __SIZE_T_WIDTH__ 32
+#  define __SIZE_T_MAX__ 0xffffffffUL
 # endif
 
 #endif

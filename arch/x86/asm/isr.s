@@ -43,17 +43,10 @@ global _isr%1
 	noerr 19
 	noerr 20
 
-global _undefined
-_undefined:
-	cli
-	push BYTE 0
-	push DWORD -1
-	jmp isr_common_stub
-
 extern __isr_fault_handler
 
 isr_common_stub:
-	pusha
+	pushad
 	push ds
 	push es
 	push fs
@@ -75,7 +68,7 @@ isr_common_stub:
 	pop fs
 	pop es
 	pop ds
-	popa
+	popad
 
 ;; IA32E Intel Volume 3A 6.13
 ;; Note that the error code is not popped when the IRET instruction is

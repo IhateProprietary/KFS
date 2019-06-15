@@ -15,22 +15,24 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __KERNEL_H__
-# define __KERNEL_H__
+#include "kernel.h"
+#include "xstdint.h"
+#include "msr.h"
 
-# include "xstdint.h"
-
-struct _sysinfo
+void test_apic(void)
 {
-	u32 acpi_rsdp;
-	u32 frameinfo;
-	u32 elfsection;
-	u32 mmap;
-	u32 meminfo;
-	u32 lapic_addr;
-	u32 ioapic_addr;
-};
+	u32 high, low;
+	u32 apic_base;
 
-int	printk(const char *fmt, ...);
+	rdmsr(0x1b, high, low);
+	printk("msr 1b read 0x%x%x\n", high, low);
 
-#endif /* __KERNEL_H__ */
+	apic_base = low & 0xffff0000;
+	printk("msr 0x%x\n", *(volatile u32 *)(apic_base+0x20));
+
+	*((volatile u32*)(0xfec00000)) = 0x1;
+	printk("ioapic id 0x%x\n", *(volatile u32 *)(0xfec00000 + 0x10));
+	*((volatile u32*)(0xfec00000)) = 0x2;
+	printk("ioapic id 0x%x\n", *(volatile u32 *)(0xfec00000 + 0x10));
+	printk("null == 0x%x\n", *(volatile u32 *)(0));
+}

@@ -50,7 +50,7 @@
  */
 
 # define IDT_ISR_USR_GATE 32
-# define IDT_ISR_USR_GATE_MAX 256
+# define IDT_ISR_GATE_MAX 256
 
 # define IDT_KERNEL_CS 0x8
 

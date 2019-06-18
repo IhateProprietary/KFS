@@ -125,7 +125,7 @@ _start:
 	mov esp, ebp
 
 	call pic_disable
-	call test_apic
+	; call test_apic
 
 ;; testing exception IDT
 	int 0

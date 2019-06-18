@@ -60,8 +60,8 @@ $(iso): $(kernel) $(grub_cfg)
 	rm -r build/isofiles
 
 $(kernel): $(assembly_object_files) $(c_object_files) $(linker_script) $(stringop) $(printk)
-	$(CC) -T $(linker_script) $(LDFLAGS) -o $(kernel) $(assembly_object_files) \
-					$(printk) $(c_object_files) -Lbuild -lsops
+	$(CC) -T $(linker_script) $(LDFLAGS) -o $@ $(assembly_object_files) \
+		$(printk) $(c_object_files) -Lbuild -lsops
 
 $(stringop):
 	make -C stringop CFLAGS+="$(CFLAGS)" AR=$(AR) CC+=$(CC) TARGET=../$@

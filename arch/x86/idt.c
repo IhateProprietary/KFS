@@ -88,8 +88,6 @@ void idt_init(void)
 			IDT_PVL_KERNEL
 		);
 	}
-	idt_entries[n] = (struct idt_entry)
-		INTGATE((u32)__pit, IDT_KERNEL_CS, IDT_PVL_KERNEL);
 }
 
 typedef struct

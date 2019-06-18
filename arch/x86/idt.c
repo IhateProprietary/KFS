@@ -88,10 +88,10 @@ void idt_init(void)
 			IDT_PVL_KERNEL
 		);
 	}
-
+	idt_entries[n] = (struct idt_entry)
+		INTGATE((u32)__pit, IDT_KERNEL_CS, IDT_PVL_KERNEL);
 }
 
-/* stack in reverse order? */
 typedef struct
 {
 	u32	ss, gs ,fs, es, ds,
@@ -131,5 +131,44 @@ void __isr_fault_handler(reg_saved_state_t state)
 	if (strerr[state.int_no])
 		_errorlog = strerr[state.int_no];
 
-	printk("Interrupt: 0x%x Error: %s\n", state.int_no, _errorlog);
+	printk("Interrupt: 0x%x Error: %s Code: 0x%x\n",
+	       state.int_no, _errorlog, state.err_code);
+	if (IDT_ISR_DF == state.int_no ||
+	    IDT_ISR_GP == state.int_no)
+		__asm__ __volatile__("hlt");
 }
+
+
+
+#if 0
+/*
+ * Home-made interrupt, saves the context and restore it,
+ * prints '*' at a regular interval
+ */
+#include "io.h"
+__attribute__((naked, noreturn))
+void __pit()
+{
+	__asm__ __volatile__(
+		"pusha\n\t"
+		"push %ds\n\t"
+		"push %es\n\t"
+		"push %fs\n\t"
+		"push %gs\n\t"
+		"push %ss\n\t"
+
+		"push $42\n\t"
+		"push %esp\n\t"
+		"call printk\n\t"
+
+		"add $8, %esp\n\t"
+		"movl $0, (0xfee000b0)\n\t"
+		"pop %ss\n\t"
+		"pop %gs\n\t"
+		"pop %fs\n\t"
+		"pop %es\n\t"
+		"pop %ds\n\t"
+		"popa\n\t"
+		"iret");
+}
+#endif

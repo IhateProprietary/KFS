@@ -39,6 +39,9 @@ void pic_disable(void)
 	outb(0x21, 4);
 	outb(0xa1, 2);
 
+	outb(0x21, 1);
+	outb(0xa1, 1);
+
 	outb(0x21, 0xff);
 	outb(0xa1, 0xff);
 }
@@ -53,6 +56,9 @@ void pic_enable(const u8 master_mask, const u8 slave_mask)
 
 	outb(0x21, 4);
 	outb(0xa1, 2);
+
+	outb(0x21, 1);
+	outb(0xa1, 1);
 
 	outb(0x21, master_mask);
 	outb(0xa1, slave_mask);

@@ -15,7 +15,7 @@ LDFLAGS = -ffreestanding -O2 -nostdlib -lgcc
 
 CFLAGS = -fno-builtin -fno-exceptions -fno-stack-protector \
 		-nostdlib -nodefaultlibs  \
-		-std=gnu99 -ffreestanding -m32 -Wall -Wextra -g3 
+		-std=gnu99 -ffreestanding -m32 -Wall -Wextra -O2
 
 arch = x86
 

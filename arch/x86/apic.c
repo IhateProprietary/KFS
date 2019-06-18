@@ -19,20 +19,47 @@
 #include "xstdint.h"
 #include "msr.h"
 
-void test_apic(void)
+#define sti() __asm__ __volatile__("sti")
+#define IOREGSEL 0xfec00000
+#define IOWIN    0xfec00010
+
+u32 read_ioapic_reg(volatile u32 *ioapic_baddr, u32 __reg)
 {
-	u32 high, low;
+	*ioapic_baddr = __reg;
+	return 4[ioapic_baddr];
+}
+
+void write_ioapic_reg(volatile u32 *ioapic_baddr, u32 __reg, u32 val)
+{
+	*ioapic_baddr = __reg;
+	4[ioapic_baddr] = val;
+}
+
+
+#if 0
+/* 
+ * the following function should just activate PIT
+ * on the pin 2 of IO APIC
+ * 2 known pin is 1, for HID inputs, and 2 for PIT,
+ * other are unknown or reprogrammed by kernel
+ */
+void test_apic()
+{
+	u32 regval;
 	u32 apic_base;
 
-	rdmsr(0x1b, high, low);
-	printk("msr 1b read 0x%x%x\n", high, low);
+	/* high */
+	*((volatile u32*)(IOREGSEL)) = 0x15;
+	regval = *((volatile u32*)(IOWIN));
+	regval = (regval & ~(0xff000000));
+	*((volatile u32*)(IOWIN)) = regval;
 
-	apic_base = low & 0xffff0000;
-	printk("msr 0x%x\n", *(volatile u32 *)(apic_base+0x20));
+	/* low */
+	*((volatile u32*)(IOREGSEL)) = 0x14;
+	regval = *((volatile u32*)(IOWIN));
+	regval = (regval & ~(0x10FFF)) | 0x20;
+	*((volatile u32*)(IOWIN)) = regval;
 
-	*((volatile u32*)(0xfec00000)) = 0x1;
-	printk("ioapic id 0x%x\n", *(volatile u32 *)(0xfec00000 + 0x10));
-	*((volatile u32*)(0xfec00000)) = 0x2;
-	printk("ioapic id 0x%x\n", *(volatile u32 *)(0xfec00000 + 0x10));
-	printk("null == 0x%x\n", *(volatile u32 *)(0));
+	sti();
 }
+#endif

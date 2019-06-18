@@ -124,6 +124,7 @@ _start:
 	call printk
 	mov esp, ebp
 
+	call pic_disable
 	call test_apic
 
 ;; testing exception IDT
@@ -134,6 +135,9 @@ _start:
 	call printk
 .ok:
 	hlt
+	jmp .ok
+;; triple fault if somehow goes past here
+	ud2
 
 section .rodata
 _fmt2: db "cpu vendor %.12s", 0xa, 0
